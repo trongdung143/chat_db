@@ -1,0 +1,496 @@
+CUSTOMERS_SCHEMA = """
+TABLE: Customers
+Mô tả:
+Bảng lưu thông tin khách hàng trong hệ thống.
+
+PRIMARY KEY:
+- Id
+
+COLUMNS:
+
+- Id (uniqueidentifier): Khóa chính của khách hàng.
+- Code (varchar): Mã định danh khách hàng.
+- Ho (nvarchar): Họ của khách hàng.
+- Ten (nvarchar): Tên của khách hàng.
+- DiDong_1 (varchar): Số điện thoại chính, thường dùng để tìm kiếm khách hàng.
+- DiDong_2 (varchar): Số điện thoại phụ.
+- Email (varchar): Địa chỉ email.
+- NgaySinh (date): Ngày sinh.
+- GioiTinh (int): Giới tính. 0 = Nữ, 1 = Nam.
+- CMND (varchar): Số CMND/CCCD.
+- Passport (varchar): Số hộ chiếu.
+- DiaChi (nvarchar): Địa chỉ nhà.
+- ChiNhanh (nvarchar): Tên chi nhánh quản lý khách hàng.
+- ChiNhanh_Code (varchar): Mã chi nhánh.
+- Status (int): >=0: đang hoạt động. <0: đã xóa mềm.
+- HoaMaiTichLuy (decimal): Giá trị tích lũy hoa mai. Không dùng cho logic nâng/hạ hạng thẻ.
+"""
+
+CUSTOMERS_SAMPLE_DATA = """
+{
+  "Id": "86C21478-B0B2-4C66-8820-9AC991D44A2C",
+  "Code": null,
+  "Ho": "KY",
+  "Ten": "HENRY TICH",
+  "DiDong_1": "0917430827CH?LIÊN",
+  "NgaySinh": "1954-12-08",
+  "GioiTinh": 1,
+  "Email": "kimphung@saigontourist.net",
+  "ChiNhanh_Code": "STS",
+  "Status": 0,
+  "HoaMaiTichLuy": null
+}
+
+{
+  "Id": "5C0E0771-0CD2-421E-B603-B1A663D24A48",
+  "Code": "LSTS0923900061045",
+  "Ho": "NGUYỄN CẢNH",
+  "Ten": "NHÂN",
+  "DiDong_1": "0703684029",
+  "NgaySinh": "1994-12-27",
+  "GioiTinh": 1,
+  "Email": "canhnhan94@gmail.com",
+  "CMND": "079094012518",
+  "Status": 0,
+  "HoaMaiTichLuy": 0
+}
+"""
+
+CARDS_SCHEMA = """
+TABLE: Cards
+Mô tả:
+Bảng định nghĩa các loại thẻ thành viên (SEA, SKY, SUN)
+và điều kiện nâng, duy trì hoặc hạ hạng.
+
+PRIMARY KEY:
+- Id
+
+COLUMNS:
+
+- Id (int): Khóa chính. 1 = SEA. 2 = SKY. 3 = SUN.
+- Name (nvarchar): Tên loại thẻ.
+- Cap_SoDichVuTu (int): Số dịch vụ tối thiểu để được cấp thẻ.
+- Cap_SoDichVuDen (int): Số dịch vụ tối đa của ngưỡng cấp.
+- Cap_TongGiaTriTu (decimal): Tổng giá trị tối thiểu (VNĐ) để được cấp thẻ.
+- Cap_TongGiaTriDen (decimal): Tổng giá trị tối đa của ngưỡng cấp.
+- DuyTri_SoDichVu (int): Số dịch vụ cần đạt mỗi chu kỳ để duy trì hạng.
+- DuyTri_TongGiaTri (decimal): Tổng giá trị cần đạt mỗi chu kỳ để duy trì hạng.
+- TG_HieuLucThe (int): Thời gian hiệu lực thẻ (tính bằng năm).
+- TG_NhacNho (int): Số ngày nhắc nhở trước khi hết hạn.
+"""
+
+CARDS_SAMPLE_DATA = """
+{
+  "Id": 1,
+  "Name": "Thẻ SEA",
+  "Cap_SoDichVuTu": 0,
+  "Cap_TongGiaTriTu": 0,
+  "DuyTri_SoDichVu": 0,
+  "DuyTri_TongGiaTri": 0,
+  "TG_HieuLucThe": 5
+}
+
+{
+  "Id": 2,
+  "Name": "Thẻ SKY",
+  "Cap_SoDichVuTu": 3,
+  "Cap_TongGiaTriTu": 50000000,
+  "DuyTri_SoDichVu": 2,
+  "DuyTri_TongGiaTri": 30000000,
+  "TG_HieuLucThe": 3
+}
+
+{
+  "Id": 3,
+  "Name": "Thẻ SUN",
+  "Cap_SoDichVuTu": 5,
+  "Cap_TongGiaTriTu": 100000000,
+  "DuyTri_SoDichVu": 3,
+  "DuyTri_TongGiaTri": 70000000,
+  "TG_HieuLucThe": 1
+}
+"""
+
+CARDS_CUSTOMERS_SCHEMA = """
+TABLE: CardCustomers
+Mô tả:
+Bảng lưu thẻ hiện tại của từng khách hàng.
+
+PRIMARY KEY:
+- Id
+
+FOREIGN KEYS:
+- CustomerId → Customers.Id
+- CardId → Cards.Id
+- NextCardId → Cards.Id
+
+COLUMNS:
+
+- Id (int): Khóa chính của bản ghi thẻ khách hàng.
+- CustomerId (uniqueidentifier): Xác định khách hàng sở hữu thẻ.
+- CardId (int): Loại thẻ hiện tại (SEA/SKY/SUN).
+- NgayHieuLuc (datetime): Ngày bắt đầu hiệu lực thẻ. Là mốc bắt đầu chu kỳ tích lũy.
+- NgayKetThuc (datetime): Ngày hết hạn thẻ. NULL = chưa xác định.
+- NextCardId (int): Loại thẻ kế tiếp nếu đủ điều kiện nâng hạng.
+- SoLanGiaHan (int): Số lần gia hạn.
+- AutoUpdate (bit): true = hệ thống tự động nâng/hạ hạng. false = xử lý thủ công.
+- Internal (bit): true = thẻ nội bộ (nhân viên). Không tính nâng/hạ hạng.
+- CheckTransaction (int): Cờ kiểm tra giao dịch.
+- SentEmail (bit): Đã gửi email thông báo hay chưa.
+- Status (int): 0 = thẻ đang hoạt động. <0 = đã hủy hoặc đã thay thế.
+- IsUpdate (bit): Cờ nội bộ tool.
+- IsCleanup (bit): Cờ nội bộ tool.
+"""
+
+CARDS_CUSTOMERS_SAMPLE_DATA = """
+{
+  "Id": 101,
+  "CustomerId": "5C0E0771-0CD2-421E-B603-B1A663D24A48",
+  "CardId": 1,
+  "NgayHieuLuc": "2024-01-01 00:00:00",
+  "NgayKetThuc": "2028-01-01 00:00:00",
+  "NextCardId": 2,
+  "AutoUpdate": true,
+  "Internal": false,
+  "Status": 0
+}
+"""
+
+CARDS_CUSTOMER_HISTORIES_SCHEMA = """
+TABLE: CardCustomerHistories
+Mô tả:
+Bảng lưu lịch sử tích lũy theo từng chu kỳ của thẻ.
+
+PRIMARY KEY:
+- Id
+
+FOREIGN KEY:
+- CardCustomerId → CardCustomers.Id
+
+COLUMNS:
+
+- Id (int): Khóa chính.
+- CardCustomerId (int): Chu kỳ tích lũy thuộc về thẻ nào.
+- TG_Tu (datetime): Ngày bắt đầu chu kỳ tích lũy. Thường = NgayHieuLuc.
+- TG_Den (datetime): Ngày kết thúc chu kỳ tích lũy. Dùng để xét nâng hoặc hạ hạng.
+- GiaTri (decimal): Tổng tiền tích lũy trong chu kỳ. SUM(TransactionHistories.SoTien).
+- DichVu (float): Tổng số dịch vụ tích lũy. SUM(ServiceTypes.TichLuy).
+- Type (int): 0 = tích lũy thường.
+- Ended (bit): false = chu kỳ đang hoạt động. true = chu kỳ đã kết thúc.
+- Ngay (datetime): Ngày tạo hoặc cập nhật bản ghi.
+"""
+
+CARDS_CUSTOMER_HISTORIES_SAMPLE_DATA = """
+{
+  "Id": 5001,
+  "CardCustomerId": 101,
+  "TG_Tu": "2024-01-01 00:00:00",
+  "TG_Den": "2025-01-01 00:00:00",
+  "GiaTri": 62000000,
+  "DichVu": 4,
+  "Type": 0,
+  "Ended": false
+}
+"""
+
+TRANSACTION_HISTORIES_SCHEMA = """
+TABLE: TransactionHistories
+Mô tả:
+Bảng lưu lịch sử giao dịch của khách hàng.
+
+PRIMARY KEY:
+- Id
+
+FOREIGN KEYS:
+- CustomerId → Customers.Id
+- LoaiTour → ServiceTypes.Code
+
+COLUMNS:
+
+- Id (int): Khóa chính.
+- MaGd (int): Mã giao dịch gốc từ hệ thống ngoài.
+- CustomerId (uniqueidentifier): Giao dịch thuộc khách hàng nào.
+- DichVu_Text (nvarchar): Tên dịch vụ.
+- LoaiTour (varchar): Mã loại tour. Dùng để lấy hệ số tích lũy từ ServiceTypes.
+- CodeDoan (nvarchar): Mã đoàn tour.
+- HanhTrinh (nvarchar): Hành trình tour.
+- BatDau (datetime): Ngày bắt đầu tour.
+- KetThuc (datetime): Ngày kết thúc tour. Dùng để xác định chu kỳ tích lũy: NgayHieuLuc <= KetThuc <= NgayKetThuc.
+- SoTien (decimal): Số tiền giao dịch (VNĐ). Được cộng vào GiaTri tích lũy.
+- TrangThai (varchar): Chỉ tính giao dịch khi TrangThai = 'Payment'.
+- HuyTour (bit): true = tour bị hủy.
+- NgayBan (datetime): Ngày bán.
+- NguonData (nvarchar): Nguồn dữ liệu.
+- Status (int): >=0: hoạt động. <0: đã xóa mềm.
+"""
+
+TRANSACTION_HISTORIES_SAMPLE_DATA = """
+{
+  "Id": 9001,
+  "MaGd": 123456,
+  "CustomerId": "5C0E0771-0CD2-421E-B603-B1A663D24A48",
+  "LoaiTour": "PKG01",
+  "CodeDoan": "HS230915A",
+  "BatDau": "2024-03-10 00:00:00",
+  "KetThuc": "2024-03-15 00:00:00",
+  "SoTien": 30000000,
+  "TrangThai": "Payment",
+  "HuyTour": false,
+  "Status": 0
+}
+"""
+
+SERVICE_TYPES_SCHEMA = """
+TABLE: ServiceTypes
+Mô tả:
+Bảng định nghĩa loại tour và hệ số tích lũy dịch vụ.
+
+PRIMARY KEY:
+- Id
+
+COLUMNS:
+
+- Id (int): Khóa chính.
+- Code (varchar): Mã loại tour. Được liên kết từ TransactionHistories.LoaiTour.
+- Name (nvarchar): Tên loại dịch vụ.
+- Category (nvarchar): Phân loại dịch vụ (ví dụ: Package).
+- TichLuy (float): Hệ số tích lũy số dịch vụ. Khi có 1 giao dịch loại này, hệ thống cộng thêm giá trị này vào DichVu.
+- Status (int): >=0: hoạt động. <0: đã xóa.
+"""
+
+SERVICE_TYPES_SAMPLE_DATA = """
+{
+  "Id": 1,
+  "Code": "PKG01",
+  "Name": "Du lịch trọn gói",
+  "Category": "Package",
+  "TichLuy": 1,
+  "Status": 0
+}
+
+{
+  "Id": 2,
+  "Code": "FLT01",
+  "Name": "Vé máy bay",
+  "Category": "Flight",
+  "TichLuy": 0.5,
+  "Status": 0
+}
+"""
+
+FULL_SCHEMA_01 = """
+DATABASE: HeThongTichLuyThe
+
+==================================================
+TABLE: Customers
+Mô tả:
+Bảng lưu thông tin khách hàng trong hệ thống.
+
+PRIMARY KEY:
+- Id
+
+COLUMNS:
+- Id (uniqueidentifier): Khóa chính.
+- Code (varchar): Mã định danh khách hàng.
+- Ho (nvarchar): Họ khách hàng.
+- Ten (nvarchar): Tên khách hàng.
+- DiDong_1 (varchar): Số điện thoại chính.
+- DiDong_2 (varchar): Số điện thoại phụ.
+- Email (varchar): Email.
+- NgaySinh (date): Ngày sinh (YYYY-MM-DD).
+- GioiTinh (int): 0 = Nữ, 1 = Nam.
+- CMND (varchar): Số CMND/CCCD.
+- Passport (varchar): Số hộ chiếu.
+- DiaChi (nvarchar): Địa chỉ.
+- ChiNhanh (nvarchar): Tên chi nhánh.
+- ChiNhanh_Code (varchar): Mã chi nhánh.
+- Status (int): >=0 hoạt động, <0 xóa mềm.
+- HoaMaiTichLuy (decimal): Không dùng cho nâng hạng.
+
+==================================================
+TABLE: Cards
+Mô tả:
+Định nghĩa loại thẻ và điều kiện nâng/hạ hạng.
+
+PRIMARY KEY:
+- Id
+
+COLUMNS:
+- Id (int): 1=SEA, 2=SKY, 3=SUN.
+- Name (nvarchar): Tên thẻ.
+- Cap_SoDichVuTu (int): Số dịch vụ tối thiểu để cấp.
+- Cap_SoDichVuDen (int): Số dịch vụ tối đa.
+- Cap_TongGiaTriTu (decimal): Tổng tiền tối thiểu để cấp.
+- Cap_TongGiaTriDen (decimal): Tổng tiền tối đa.
+- DuyTri_SoDichVu (int): Số dịch vụ cần duy trì.
+- DuyTri_TongGiaTri (decimal): Tổng tiền cần duy trì.
+- TG_HieuLucThe (int): Số năm hiệu lực.
+- TG_NhacNho (int): Số ngày nhắc trước khi hết hạn.
+
+==================================================
+TABLE: CardCustomers
+Mô tả:
+Thẻ hiện tại của khách hàng.
+
+PRIMARY KEY:
+- Id
+
+FOREIGN KEYS:
+- CustomerId → Customers.Id
+- CardId → Cards.Id
+- NextCardId → Cards.Id
+
+COLUMNS:
+- Id (int)
+- CustomerId (uniqueidentifier)
+- CardId (int)
+- NgayHieuLuc (datetime)
+- NgayKetThuc (datetime, NULL nếu chưa xác định)
+- NextCardId (int)
+- SoLanGiaHan (int)
+- AutoUpdate (bit)
+- Internal (bit)
+- CheckTransaction (int)
+- SentEmail (bit)
+- Status (int): 0 = đang hoạt động
+- IsUpdate (bit)
+- IsCleanup (bit)
+
+==================================================
+TABLE: CardCustomerHistories
+Mô tả:
+Chu kỳ tích lũy của thẻ.
+
+PRIMARY KEY:
+- Id
+
+FOREIGN KEY:
+- CardCustomerId → CardCustomers.Id
+
+COLUMNS:
+- Id (int)
+- CardCustomerId (int)
+- TG_Tu (datetime)
+- TG_Den (datetime)
+- GiaTri (decimal): SUM(TransactionHistories.SoTien)
+- DichVu (float): SUM(ServiceTypes.TichLuy)
+- Type (int)
+- Ended (bit)
+- Ngay (datetime)
+
+==================================================
+TABLE: TransactionHistories
+Mô tả:
+Lịch sử giao dịch của khách hàng.
+
+PRIMARY KEY:
+- Id
+
+FOREIGN KEYS:
+- CustomerId → Customers.Id
+- LoaiTour → ServiceTypes.Code
+
+COLUMNS:
+- Id (int)
+- MaGd (int)
+- CustomerId (uniqueidentifier)
+- DichVu_Text (nvarchar)
+- LoaiTour (varchar)
+- CodeDoan (nvarchar)
+- HanhTrinh (nvarchar)
+- BatDau (datetime)
+- KetThuc (datetime)
+- SoTien (decimal)
+- TrangThai (varchar): Chỉ tính khi = 'Payment'
+- HuyTour (bit)
+- NgayBan (datetime)
+- NguonData (nvarchar)
+- Status (int): >=0 hợp lệ
+
+==================================================
+TABLE: ServiceTypes
+Mô tả:
+Loại tour và hệ số tích lũy.
+
+PRIMARY KEY:
+- Id
+
+COLUMNS:
+- Id (int)
+- Code (varchar)
+- Name (nvarchar)
+- Category (nvarchar)
+- TichLuy (float)
+- Status (int)
+
+==================================================
+BUSINESS RULES SUMMARY
+
+1. Chỉ tính giao dịch khi:
+   - TransactionHistories.TrangThai = 'Payment'
+   - TransactionHistories.Status >= 0
+   - HuyTour = false
+
+2. Chu kỳ tích lũy:
+   NgayHieuLuc <= KetThuc <= NgayKetThuc
+
+3. GiaTri:
+   SUM(TransactionHistories.SoTien)
+
+4. DichVu:
+   SUM(ServiceTypes.TichLuy)
+
+5. Điều kiện nâng hạng:
+   GiaTri >= Cards.Cap_TongGiaTriTu
+   HOẶC
+   DichVu >= Cards.Cap_SoDichVuTu
+
+6. Điều kiện duy trì:
+   GiaTri >= Cards.DuyTri_TongGiaTri
+   HOẶC
+   DichVu >= Cards.DuyTri_SoDichVu
+
+7. Mỗi khách chỉ có 1 thẻ Status = 0.
+
+"""
+
+FULL_SCHEMA_02 = (
+    CUSTOMERS_SCHEMA
+    + "\n\n"
+    + CARDS_SCHEMA
+    + "\n\n"
+    + CARDS_CUSTOMERS_SCHEMA
+    + "\n\n"
+    + CARDS_CUSTOMER_HISTORIES_SCHEMA
+    + "\n\n"
+    + TRANSACTION_HISTORIES_SCHEMA
+    + "\n\n"
+    + SERVICE_TYPES_SCHEMA
+)
+
+
+FULL_SCHEMA_02_SAMPLE_DATA = (
+    CUSTOMERS_SCHEMA
+    + "\n\n"
+    + CUSTOMERS_SAMPLE_DATA
+    + "\n\n"
+    + CARDS_SCHEMA
+    + "\n\n"
+    + CARDS_SAMPLE_DATA
+    + "\n\n"
+    + CARDS_CUSTOMERS_SCHEMA
+    + "\n\n"
+    + CARDS_CUSTOMERS_SAMPLE_DATA
+    + "\n\n"
+    + CARDS_CUSTOMER_HISTORIES_SCHEMA
+    + "\n\n"
+    + CARDS_CUSTOMER_HISTORIES_SAMPLE_DATA
+    + "\n\n"
+    + TRANSACTION_HISTORIES_SCHEMA
+    + "\n\n"
+    + TRANSACTION_HISTORIES_SAMPLE_DATA
+    + "\n\n"
+    + SERVICE_TYPES_SCHEMA
+    + "\n\n"
+    + SERVICE_TYPES_SAMPLE_DATA
+)

@@ -1,0 +1,14 @@
+langchain
+langchain-community 
+fastapi
+python-dotenv
+langgraph
+uvicorn[standard]
+langsmith
+python-dotenv
+huggingface_hub[hf_xet]
+langgraph-cli[inmem]
+pyodbc
+langchain_openai 
+pandas
+sqlalchemy 
