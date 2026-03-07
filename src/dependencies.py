@@ -2,4 +2,6 @@ from src.core.workflow import Workflow
 
 workflow = Workflow()
 
-graph = workflow.get_workflow()
+
+def get_workflow():
+    return workflow

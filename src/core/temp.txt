@@ -1,0 +1,9 @@
+      Định dạng đầu ra (bắt buộc):
+            {
+            "content": "Câu trả lời cho nhân viên chăm sóc khách hàng",
+            "solution_plan": "YES" hoặc "NO"
+            }
+
+            Trong đó:
+            - solution_plan = "YES" nếu cần gợi ý thêm hướng xử lý hoặc giải pháp cho vấn đề.
+            - solution_plan = "NO" nếu chỉ cần trả lời dựa trên dữ liệu.

@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Stream</title>
-    <!-- Marked.js for Markdown parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
-    <!-- Highlight.js for code syntax highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
@@ -122,20 +120,6 @@
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes blink {
-
-            0%,
-            50% {
-                opacity: 1;
-            }
-
-            51%,
-            100% {
-                opacity: 0;
-            }
-        }
-
-        /* Markdown Styles */
         .markdown-content {
             line-height: 1.6;
         }
@@ -199,14 +183,6 @@
             font-size: 0.9em;
         }
 
-        .markdown-content blockquote {
-            border-left: 4px solid #667eea;
-            padding-left: 16px;
-            margin: 12px 0;
-            color: #666;
-            font-style: italic;
-        }
-
         .markdown-content table {
             border-collapse: collapse;
             width: 100%;
@@ -223,29 +199,6 @@
         .markdown-content table th {
             background: #f5f5f5;
             font-weight: 600;
-        }
-
-        .markdown-content a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .markdown-content a:hover {
-            text-decoration: underline;
-        }
-
-        .markdown-content strong {
-            font-weight: 600;
-        }
-
-        .markdown-content em {
-            font-style: italic;
-        }
-
-        .markdown-content hr {
-            border: none;
-            border-top: 2px solid #e0e0e0;
-            margin: 16px 0;
         }
 
         .input-container {
@@ -287,10 +240,6 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        #send-btn:active {
-            transform: translateY(0);
-        }
-
         #send-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -300,197 +249,6 @@
             font-size: 0.75em;
             opacity: 0.6;
             margin-top: 5px;
-        }
-
-        .sql-container {
-            margin-top: 15px;
-            padding: 0;
-            background: #2d2d2d;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .sql-header {
-            background: #1e1e1e;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid #444;
-        }
-
-        .sql-header-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .dot-red {
-            background: #ff5f56;
-        }
-
-        .dot-yellow {
-            background: #ffbd2e;
-        }
-
-        .dot-green {
-            background: #27c93f;
-        }
-
-        .sql-code {
-            font-family: 'Courier New', monospace;
-            color: #a9dc76;
-            font-size: 0.9em;
-            white-space: pre-wrap;
-            word-break: break-all;
-            padding: 12px;
-            line-height: 1.5;
-        }
-
-        .execute-btn {
-            margin: 12px;
-            padding: 10px 20px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .execute-btn:hover {
-            background: #45a049;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-        }
-
-        .execute-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .data-result {
-            margin-top: 15px;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .result-header {
-            background: #f0f0f0;
-            padding: 10px 12px;
-            border-radius: 8px 8px 0 0;
-            font-weight: 600;
-            color: #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .result-count {
-            background: #667eea;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 0.85em;
-        }
-
-        .data-table-container {
-            overflow-x: auto;
-            border-radius: 0 0 8px 8px;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 0.9em;
-        }
-
-        .data-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .data-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .data-table tr:hover {
-            background: #f5f5f5;
-        }
-
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .error-message {
-            margin-top: 15px;
-            padding: 12px;
-            background: #ffebee;
-            color: #c62828;
-            border-radius: 8px;
-            border-left: 4px solid #c62828;
-            animation: shake 0.5s ease;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-5px);
-            }
-
-            75% {
-                transform: translateX(5px);
-            }
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid #fff;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
         }
 
         .empty-state {
@@ -504,88 +262,245 @@
             margin-bottom: 10px;
         }
 
-        .mode-toggle-btn {
+        .modal-overlay {
+            display: none;
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 18px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-btn-primary {
+            width: 100%;
+            padding: 12px 25px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 25px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            z-index: 999;
             transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .mode-toggle-btn:hover {
+        .modal-btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .mode-toggle-btn.auto-mode {
-            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        .modal-btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-text {
+            color: #c62828;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 
 <body>
-    <button class="mode-toggle-btn auto-mode" id="mode-toggle-btn" title="Che do tu dong">🖱️ Manual</button>
-
-    <div class="chat-container">
-        <div class="chat-header">
-            Natural Language to SQL Query Generation
+    <!-- Client ID Modal -->
+    <div id="clientModal" class="modal-overlay active">
+        <div class="modal-content">
+            <h2>👋 Chào mừng</h2>
+            <p>Nhập Client ID để bắt đầu</p>
+            <input type="text" id="clientInput" placeholder="Client ID..." autofocus />
+            <div id="errorText" class="error-text"></div>
+            <button class="modal-btn-primary" id="submitClientBtn">Tiếp tục</button>
         </div>
+    </div>
 
+    <div class="chat-container" id="chatContainer" style="display: none;">
+        <div class="chat-header">
+            Chat DB
+            <div style="font-size: 0.7em; margin-top: 5px;">ID: <span id="headerId"></span></div>
+        </div>
         <div id="chat-box"></div>
-
         <div class="input-container">
-            <input type="text" id="message-input" placeholder="Hỏi về database của bạn..." autofocus />
+            <input type="text" id="message-input" placeholder="Hỏi về database..." autofocus />
             <button id="send-btn">Gửi</button>
         </div>
     </div>
 
     <script>
-        // Optional: autofill for dev
-        // fullNameInput.value = 'Test User'; emailInput.value = 'test@example.com';
-
         const chatBox = document.getElementById('chat-box');
         const messageInput = document.getElementById('message-input');
         const sendBtn = document.getElementById('send-btn');
-        const modeToggleBtn = document.getElementById('mode-toggle-btn');
-        let currentEventSource = null;
-        let autoExecuteSQL = false;
+        const clientModal = document.getElementById('clientModal');
+        const clientInput = document.getElementById('clientInput');
+        const submitClientBtn = document.getElementById('submitClientBtn');
+        const errorText = document.getElementById('errorText');
+        const chatContainer = document.getElementById('chatContainer');
+        const headerId = document.getElementById('headerId');
 
-        // Initialize chat with welcome message
-        function initializeChat() {
-            const emptyStateDiv = document.createElement('div');
-            emptyStateDiv.classList.add('empty-state');
-            emptyStateDiv.innerHTML = `
-                <div class="empty-state-icon">💬</div>
-                <h3>Chào mừng đến với Chat DB</h3>
-                <p>Hãy đặt câu hỏi về database của bạn</p>
-            `;
-            chatBox.appendChild(emptyStateDiv);
+        let currentClientId = null;
+        let currentEventSource = null;
+
+        // Clear client on page load
+        function loadClientId() {
+            // Get saved ID before removing
+            const savedId = localStorage.getItem('chatdb_client_id');
+
+            // Clear from server if exists
+            if (savedId) {
+                fetch(`/clear_client?client_id=${encodeURIComponent(savedId)}`).catch(e => console.log(e));
+            }
+
+            // Clear localStorage
+            localStorage.removeItem('chatdb_client_id');
+
+            // Show login modal
+            clientModal.classList.add('active');
+            chatContainer.style.display = 'none';
+            clientInput.focus();
         }
 
-        // Initialize on page load
-        window.addEventListener('load', initializeChat);
+        // Handle client ID submission
+        async function handleClientSubmit() {
+            const clientId = clientInput.value.trim();
 
-        modeToggleBtn.addEventListener('click', () => {
-            autoExecuteSQL = !autoExecuteSQL;
-            if (autoExecuteSQL) {
-                modeToggleBtn.textContent = '⚡ Auto';
-                modeToggleBtn.classList.add('auto-mode');
-                const sqlContainers = chatBox.querySelectorAll('.sql-container');
-                sqlContainers.forEach(container => container.remove());
-            } else {
-                modeToggleBtn.textContent = '🖱️ Manual';
-                modeToggleBtn.classList.remove('auto-mode');
+            if (!clientId) {
+                errorText.textContent = 'Vui lòng nhập Client ID';
+                return;
             }
+
+            submitClientBtn.disabled = true;
+            errorText.textContent = '';
+
+            try {
+                // Check if client exists
+                const checkRes = await fetch(`/check_client?client_id=${encodeURIComponent(clientId)}`);
+                const checkData = await checkRes.json();
+
+                if (checkData.exists) {
+                    errorText.textContent = 'Client ID đã tồn tại. Vui lòng dùng cái khác.';
+                    submitClientBtn.disabled = false;
+                    return;
+                }
+
+                // Register new client
+                const regRes = await fetch('/register_client', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ client_id: clientId })
+                });
+                const regData = await regRes.json();
+
+                if (!regData.success) {
+                    errorText.textContent = regData.message;
+                    submitClientBtn.disabled = false;
+                    return;
+                }
+
+                // Save and login
+                localStorage.setItem('chatdb_client_id', clientId);
+                currentClientId = clientId;
+                headerId.textContent = clientId;
+
+                clientModal.classList.remove('active');
+                chatContainer.style.display = 'flex';
+                messageInput.focus();
+                initializeChat();
+            } catch (error) {
+                errorText.textContent = 'Lỗi kết nối';
+                submitClientBtn.disabled = false;
+            }
+        }
+
+        clientInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleClientSubmit();
         });
+
+        submitClientBtn.addEventListener('click', handleClientSubmit);
+
+        // Initialize chat
+        function initializeChat() {
+            const empty = document.createElement('div');
+            empty.classList.add('empty-state');
+            empty.innerHTML = `
+                <div class="empty-state-icon">💬</div>
+                <h3>Chat DB</h3>
+                <p>Hỏi về database của bạn</p>
+            `;
+            chatBox.appendChild(empty);
+        }
+
+        window.addEventListener('load', loadClientId);
 
         marked.setOptions({
             breaks: true,
@@ -600,375 +515,144 @@
             }
         });
 
-        function clearEmptyState() {
-            const emptyState = chatBox.querySelector('.empty-state');
-            if (emptyState) {
-                emptyState.remove();
+        function parseStatusMessage(message) {
+            // Parse messages like "INFO:message" or "ERROR:message"
+            const match = message.match(/^(INFO|ERROR|WARNING|SUCCESS):(.*)/);
+            if (match) {
+                const prefix = match[1];
+                const text = match[2].trim();
+                const iconMap = {
+                    'INFO': 'ℹ️',
+                    'ERROR': '❌',
+                    'WARNING': '⚠️',
+                    'SUCCESS': '✅'
+                };
+                return {
+                    icon: iconMap[prefix] || '❓',
+                    text: text,
+                    type: prefix.toLowerCase()
+                };
             }
+            return {
+                icon: 'ℹ️',
+                text: message,
+                type: 'info'
+            };
+        }
+
+        function clearEmpty() {
+            const empty = chatBox.querySelector('.empty-state');
+            if (empty) empty.remove();
         }
 
         function addMessage(text, sender) {
-            clearEmptyState();
+            clearEmpty();
+            const div = document.createElement('div');
+            div.classList.add('message', sender);
 
-            const msgDiv = document.createElement('div');
-            msgDiv.classList.add('message', sender);
+            const span = document.createElement('span');
+            span.textContent = text;
+            div.appendChild(span);
 
-            const textSpan = document.createElement('span');
-            textSpan.textContent = text;
-            msgDiv.appendChild(textSpan);
+            const time = document.createElement('div');
+            time.classList.add('timestamp');
+            time.textContent = new Date().toLocaleTimeString('vi-VN');
+            div.appendChild(time);
 
-            const timestamp = document.createElement('div');
-            timestamp.classList.add('timestamp');
-            timestamp.textContent = new Date().toLocaleTimeString('vi-VN');
-            msgDiv.appendChild(timestamp);
-
-            chatBox.appendChild(msgDiv);
+            chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
-            return msgDiv;
-        }
-
-        function createSQLButton(sql, container) {
-            if (!sql || !sql.trim()) return;
-
-            if (autoExecuteSQL) {
-                const autoBtn = document.createElement('button');
-                autoBtn.classList.add('execute-btn');
-                autoBtn.style.background = '#ff9800';
-                autoBtn.innerHTML = '<span>⚡</span><span>Tự động xử lý</span>';
-
-                async function runSQL(btn) {
-                    btn.disabled = true;
-                    btn.innerHTML = '<span class="loading-spinner"></span><span>Đang xử lý...</span>';
-                    try {
-                        const response = await fetch('/get_data', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ sql: sql })
-                        });
-                        const data = await response.json();
-                        if (response.ok) {
-                            const resultDiv = document.createElement('div');
-                            resultDiv.classList.add('data-result');
-                            if (!data || data.length === 0) {
-                                resultDiv.innerHTML = `
-                                    <div class="result-header">
-                                        Kết quả truy vấn
-                                        <span class="result-count">0 rows</span>
-                                    </div>
-                                    <div style="padding: 20px; text-align: center; color: #999;">
-                                        Không có dữ liệu
-                                    </div>
-                                `;
-                            } else {
-                                const header = document.createElement('div');
-                                header.classList.add('result-header');
-                                header.innerHTML = `
-                                    Kết quả truy vấn
-                                    <span class="result-count">${data.length} rows</span>
-                                `;
-                                resultDiv.appendChild(header);
-
-                                const tableContainer = document.createElement('div');
-                                tableContainer.classList.add('data-table-container');
-
-                                const table = document.createElement('table');
-                                table.classList.add('data-table');
-
-                                const thead = document.createElement('thead');
-                                const headerRow = document.createElement('tr');
-                                Object.keys(data[0]).forEach(key => {
-                                    const th = document.createElement('th');
-                                    th.textContent = key;
-                                    headerRow.appendChild(th);
-                                });
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
-
-                                const tbody = document.createElement('tbody');
-                                data.forEach(row => {
-                                    const tr = document.createElement('tr');
-                                    Object.values(row).forEach(value => {
-                                        const td = document.createElement('td');
-                                        if (value === null) {
-                                            td.textContent = 'NULL';
-                                            td.style.color = '#999';
-                                            td.style.fontStyle = 'italic';
-                                        } else if (typeof value === 'number') {
-                                            td.textContent = value;
-                                            td.style.textAlign = 'right';
-                                        } else {
-                                            td.textContent = value;
-                                        }
-                                        tr.appendChild(td);
-                                    });
-                                    tbody.appendChild(tr);
-                                });
-                                table.appendChild(tbody);
-
-                                tableContainer.appendChild(table);
-                                resultDiv.appendChild(tableContainer);
-                            }
-                            container.appendChild(resultDiv);
-                        } else {
-                            const errorDiv = document.createElement('div');
-                            errorDiv.classList.add('error-message');
-                            errorDiv.innerHTML = `<strong>❌ Lỗi:</strong> ${data.detail || 'Có lỗi xảy ra'}`;
-                            container.appendChild(errorDiv);
-                        }
-                    } catch (error) {
-                        const errorDiv = document.createElement('div');
-                        errorDiv.classList.add('error-message');
-                        errorDiv.innerHTML = `<strong>❌ Lỗi:</strong> Lỗi kết nối: ${error.message}`;
-                        container.appendChild(errorDiv);
-                    }
-                    chatBox.scrollTop = chatBox.scrollHeight;
-                }
-
-                autoBtn.onclick = () => runSQL(autoBtn);
-                setTimeout(() => {
-                    autoBtn.click();
-                }, 350);
-                return;
-            }
-
-            const sqlContainer = document.createElement('div');
-            sqlContainer.classList.add('sql-container');
-
-            const sqlHeader = document.createElement('div');
-            sqlHeader.classList.add('sql-header');
-            sqlHeader.innerHTML = `
-                <span class="sql-header-dot dot-red"></span>
-                <span class="sql-header-dot dot-yellow"></span>
-                <span class="sql-header-dot dot-green"></span>
-                <span style="color: #999; font-size: 0.85em; margin-left: 8px;">SQL Query</span>
-            `;
-
-            const sqlCode = document.createElement('div');
-            sqlCode.classList.add('sql-code');
-            sqlCode.textContent = sql;
-
-            const executeBtn = document.createElement('button');
-            executeBtn.classList.add('execute-btn');
-            executeBtn.innerHTML = '<span>▶</span><span>Thực thi SQL</span>';
-
-            async function runSQL(btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<span class="loading-spinner"></span><span>Đang xử lý...</span>';
-                try {
-                    const response = await fetch('/get_data', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ sql: sql })
-                    });
-                    const data = await response.json();
-                    if (response.ok) {
-                        displayData(data, sqlContainer);
-                        btn.innerHTML = '<span>✓</span><span>Thành công</span>';
-                        btn.style.background = '#2196F3';
-                    } else {
-                        displayError(data.detail || 'Có lỗi xảy ra', sqlContainer);
-                        btn.innerHTML = '<span>✗</span><span>Lỗi</span>';
-                        btn.style.background = '#f44336';
-                        setTimeout(() => {
-                            btn.innerHTML = '<span>▶</span><span>Thực thi SQL</span>';
-                            btn.style.background = '#4CAF50';
-                            btn.disabled = false;
-                        }, 3000);
-                    }
-                } catch (error) {
-                    displayError('Lỗi kết nối: ' + error.message, sqlContainer);
-                    btn.innerHTML = '<span>✗</span><span>Lỗi kết nối</span>';
-                    btn.style.background = '#f44336';
-                    setTimeout(() => {
-                        btn.innerHTML = '<span>▶</span><span>Thực thi SQL</span>';
-                        btn.style.background = '#4CAF50';
-                        btn.disabled = false;
-                    }, 3000);
-                }
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-
-            executeBtn.onclick = () => runSQL(executeBtn);
-
-            sqlContainer.appendChild(sqlHeader);
-            sqlContainer.appendChild(sqlCode);
-            sqlContainer.appendChild(executeBtn);
-            container.appendChild(sqlContainer);
-        }
-
-        function displayData(data, container) {
-            const oldResult = container.querySelector('.data-result');
-            if (oldResult) oldResult.remove();
-
-            const resultDiv = document.createElement('div');
-            resultDiv.classList.add('data-result');
-
-            if (!data || data.length === 0) {
-                resultDiv.innerHTML = `
-                    <div class="result-header">
-                        Kết quả truy vấn
-                        <span class="result-count">0 rows</span>
-                    </div>
-                    <div style="padding: 20px; text-align: center; color: #999;">
-                        Không có dữ liệu
-                    </div>
-                `;
-                container.appendChild(resultDiv);
-                return;
-            }
-
-            const header = document.createElement('div');
-            header.classList.add('result-header');
-            header.innerHTML = `
-                Kết quả truy vấn
-                <span class="result-count">${data.length} rows</span>
-            `;
-            resultDiv.appendChild(header);
-
-            const tableContainer = document.createElement('div');
-            tableContainer.classList.add('data-table-container');
-
-            const table = document.createElement('table');
-            table.classList.add('data-table');
-
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            Object.keys(data[0]).forEach(key => {
-                const th = document.createElement('th');
-                th.textContent = key;
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-
-            const tbody = document.createElement('tbody');
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                Object.values(row).forEach(value => {
-                    const td = document.createElement('td');
-                    if (value === null) {
-                        td.textContent = 'NULL';
-                        td.style.color = '#999';
-                        td.style.fontStyle = 'italic';
-                    } else if (typeof value === 'number') {
-                        td.textContent = value;
-                        td.style.textAlign = 'right';
-                    } else {
-                        td.textContent = value;
-                    }
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
-            table.appendChild(tbody);
-
-            tableContainer.appendChild(table);
-            resultDiv.appendChild(tableContainer);
-            container.appendChild(resultDiv);
-        }
-
-        function displayError(errorMsg, container) {
-            const oldResult = container.querySelector('.data-result, .error-message');
-            if (oldResult) oldResult.remove();
-
-            const errorDiv = document.createElement('div');
-            errorDiv.classList.add('error-message');
-            errorDiv.innerHTML = `<strong>❌ Lỗi:</strong> ${errorMsg}`;
-            container.appendChild(errorDiv);
         }
 
         function sendMessage() {
             const text = messageInput.value.trim();
-            if (!text) return;
+            if (!text || !currentClientId) return;
 
             addMessage(text, 'user');
             messageInput.value = '';
             sendBtn.disabled = true;
 
-            const botMsgDiv = document.createElement('div');
-            botMsgDiv.classList.add('message', 'bot', 'streaming');
-            clearEmptyState();
-            chatBox.appendChild(botMsgDiv);
+            const botDiv = document.createElement('div');
+            botDiv.classList.add('message', 'bot', 'streaming');
+            clearEmpty();
+            chatBox.appendChild(botDiv);
 
             const contentDiv = document.createElement('div');
             contentDiv.classList.add('markdown-content');
-            botMsgDiv.appendChild(contentDiv);
+            botDiv.appendChild(contentDiv);
 
-            let accumulatedText = '';
-
+            let accumulated = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            currentEventSource = new EventSource(`/query?message=${encodeURIComponent(text)}`);
+            // Send message with client_id
+            currentEventSource = new EventSource(
+                `/query?message=${encodeURIComponent(text)}&client_id=${encodeURIComponent(currentClientId)}`
+            );
 
-            currentEventSource.onmessage = function (event) {
+            currentEventSource.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
 
                     if (data.type === 'chunk') {
-                        accumulatedText += data.response;
-                        // Remove SQL markers from displayed text
-                        let displayText = accumulatedText.replace(/---SQL START---[\s\S]*?---SQL END---/g, '').trim();
-                        // Render markdown progressively
-                        contentDiv.innerHTML = marked.parse(displayText);
+                        accumulated += data.response;
+                        contentDiv.innerHTML = marked.parse(accumulated);
                         chatBox.scrollTop = chatBox.scrollHeight;
-                    }
-                    else if (data.type === 'sql') {
-                        botMsgDiv.classList.remove('streaming');
+                    } else if (data.type === 'step') {
+                        const stepDiv = document.createElement('div');
+                        const parsed = parseStatusMessage(data.response);
 
+                        let bgColor = '#e3f2fd';
+                        let borderColor = '#2196F3';
+                        let textColor = '#1976D2';
 
-                        const sqlMatch = data.response.match(/---SQL START---([\s\S]*?)---SQL END---/);
-                        const cleanSQL = sqlMatch ? sqlMatch[1].trim() : data.response.trim();
+                        if (parsed.type === 'error') {
+                            bgColor = '#ffebee';
+                            borderColor = '#f44336';
+                            textColor = '#c62828';
+                        } else if (parsed.type === 'warning') {
+                            bgColor = '#fff3e0';
+                            borderColor = '#ff9800';
+                            textColor = '#e65100';
+                        } else if (parsed.type === 'success') {
+                            bgColor = '#e8f5e9';
+                            borderColor = '#4caf50';
+                            textColor = '#2e7d32';
+                        }
 
-                        createSQLButton(cleanSQL, botMsgDiv);
-
-                        const timestamp = document.createElement('div');
-                        timestamp.classList.add('timestamp');
-                        timestamp.textContent = new Date().toLocaleTimeString('vi-VN');
-                        botMsgDiv.appendChild(timestamp);
-
+                        stepDiv.style.cssText = `margin-bottom: 10px; padding: 8px 12px; background: ${bgColor}; border-left: 3px solid ${borderColor}; font-size: 0.9em; color: ${textColor}; border-radius: 4px;`;
+                        stepDiv.innerHTML = `<strong>${parsed.icon}</strong> ${parsed.text}`;
+                        botDiv.insertBefore(stepDiv, contentDiv);
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    } else if (data.type === 'status') {
+                        botDiv.classList.remove('streaming');
+                        const time = document.createElement('div');
+                        time.classList.add('timestamp');
+                        time.textContent = new Date().toLocaleTimeString('vi-VN');
+                        botDiv.appendChild(time);
                         sendBtn.disabled = false;
                         currentEventSource.close();
-                        currentEventSource = null;
-
                         chatBox.scrollTop = chatBox.scrollHeight;
                     }
                 } catch (e) {
-                    console.error('Error parsing JSON:', e, event.data);
+                    console.error('Parse error:', e);
                 }
             };
 
-            currentEventSource.onerror = function (error) {
-                console.error('SSE Error:', error);
-                botMsgDiv.classList.remove('streaming');
-                contentDiv.innerHTML = '<p>Lỗi kết nối. Vui lòng thử lại.</p>';
-
-                const timestamp = document.createElement('div');
-                timestamp.classList.add('timestamp');
-                timestamp.textContent = new Date().toLocaleTimeString('vi-VN');
-                botMsgDiv.appendChild(timestamp);
-
-                currentEventSource.close();
+            currentEventSource.onerror = () => {
+                console.error('SSE Error');
+                botDiv.classList.remove('streaming');
+                contentDiv.innerHTML = '<p>Lỗi kết nối</p>';
                 sendBtn.disabled = false;
-                currentEventSource = null;
+                currentEventSource.close();
             };
         }
 
         sendBtn.addEventListener('click', sendMessage);
-
         messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !sendBtn.disabled) {
-                sendMessage();
-            }
+            if (e.key === 'Enter' && !sendBtn.disabled) sendMessage();
         });
 
         window.addEventListener('beforeunload', () => {
-            if (currentEventSource) {
-                currentEventSource.close();
-            }
+            if (currentEventSource) currentEventSource.close();
         });
     </script>
 </body>

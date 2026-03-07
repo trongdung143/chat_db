@@ -1,19 +1,24 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse, StreamingResponse
+from langgraph import graph
 from pydantic import BaseModel
 import os
-from src.core.chain import graph
-from src.connection import engine
+from langgraph.types import Command
+from src.dependencies import get_workflow
 import json
-import re
 from langchain_core.messages import HumanMessage, AIMessageChunk
-from fastapi import HTTPException
 import asyncio
-import pandas as pd
+from src.core.workflow import Workflow
+
+clients = {}
 
 
 class SQLRequest(BaseModel):
     sql: str
+
+
+class ClientID(BaseModel):
+    client_id: str
 
 
 router = APIRouter()
@@ -31,59 +36,89 @@ async def get_chat_page():
         return f.read()
 
 
+@router.get("/check_client")
+async def check_client(client_id: str):
+    exists = client_id in clients
+    return {"exists": exists, "client_id": client_id}
+
+
+@router.post("/register_client")
+async def register_client(client: ClientID):
+    if not client.client_id or client.client_id.strip() == "":
+        return {"success": False, "message": "Client ID không được để trống"}
+
+    if client.client_id in clients:
+        return {"success": False, "message": "Client ID đã tồn tại"}
+
+    clients[client.client_id] = True
+    return {
+        "success": True,
+        "message": "Đăng ký thành công",
+        "client_id": client.client_id,
+    }
+
+
+@router.get("/clear_client")
+async def clear_client(client_id: str):
+    """Clear/remove a client from the server"""
+    if client_id in clients:
+        del clients[client_id]
+        return {"success": True, "message": "Client đã xóa"}
+    return {"success": False, "message": "Client không tồn tại"}
+
+
 @router.get("/query")
-async def query(message: str):
+async def query(
+    message: str,
+    client_id: str,
+    workflow: Workflow = Depends(get_workflow),
+):
     async def generate():
-        full_response = ""
+        graph = workflow.get_workflow()
         input_state = {
+            "question": message,
             "messages": HumanMessage(content=message),
+            "answer": "",
+            "next_node": "",
+            "sql": "",
+            "sql_error_msg": "",
+            "sql_fix_count": 0,
         }
 
         config = {
             "configurable": {
-                "thread_id": "123",
+                "thread_id": client_id,
             }
         }
-        async for chunk in graph.astream(input_state, config, stream_mode="messages"):
-            response, meta = chunk
-            if isinstance(response, AIMessageChunk):
-                full_response += response.content
-                for c in response.content:
-                    await asyncio.sleep(0.01)
-                    yield f"data: {json.dumps({'type': 'chunk', 'response': c}, ensure_ascii=False)}\n\n"
+        interrupt = graph.get_state(config=config).interrupts
+        if interrupt:
+            input_state = Command(resume=message)
+        async for event in graph.astream(
+            input=input_state,
+            config=config,
+            stream_mode=["messages", "updates", "custom"],
+            subgraphs=True,
+        ):
+            subgraph, data_type, chunk = event
+            if data_type == "messages":
+                response, meta = chunk
+                langgraph_node = meta.get("langgraph_node")
+                if langgraph_node in [
+                    "data_to_answer",
+                    "simple_question",
+                ] and isinstance(response, AIMessageChunk):
+                    for char in response.content:
+                        await asyncio.sleep(0.01)
+                        yield f"data: {json.dumps({'type': 'chunk', 'response': char}, ensure_ascii=False)}\n\n"
+            if data_type == "updates":
+                if chunk.get("__interrupt__"):
+                    for interrupt in chunk["__interrupt__"]:
+                        yield f"data: {json.dumps({'type': 'chunk',
+                                                    'response': interrupt.value
+                                                }, ensure_ascii=False)}\n\n"
+            elif data_type == "custom":
+                yield f"data: {json.dumps({'type': 'step', 'response': chunk.strip()}, ensure_ascii=False)}\n\n"
 
-        match = re.search(
-            r"---SQL START---(.*?)---SQL END---", full_response, re.DOTALL
-        )
-        sql = match.group(1).strip() if match else ""
-
-        yield f"data: {json.dumps({'type': 'sql', 'response': sql}, ensure_ascii=False)}\n\n"
+        yield f"data: {json.dumps({'type': 'status', 'response': "done"}, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(generate(), media_type="text/event-stream")
-
-
-@router.post("/get_data")
-async def get_data(request: SQLRequest):
-    sql = request.sql
-
-    try:
-        (sql)
-
-        sql_type = sql.strip().split()[0].upper()
-
-        if sql_type == "SELECT":
-            if cursor.description is None:
-                return []
-
-            columns = [desc[0] for desc in cursor.description]
-            rows = cursor.fetchall()
-            data = [dict(zip(columns, row)) for row in rows]
-            return data
-
-        else:
-            conn.commit()  #
-            return [{"affected_rows": cursor.rowcount}]
-
-    except Exception as e:
-        conn.rollback()  #
-        raise HTTPException(status_code=400, detail=str(e))

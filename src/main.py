@@ -1,8 +1,14 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from contextlib import asynccontextmanager
 from src.api import query
+from src.core.workflow import Workflow
+
+workflow = Workflow()
+
+
+def get_workflow():
+    return workflow.get_workflow()
 
 
 app = FastAPI()

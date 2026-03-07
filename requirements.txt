@@ -12,3 +12,4 @@ pyodbc
 langchain_openai 
 pandas
 sqlalchemy 
+sqlparse
