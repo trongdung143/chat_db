@@ -23,6 +23,7 @@ from src.database.schema_db import FULL_SCHEMA_SAMPLE_DATA, FULL_SCHEMA
 from src.services.sql_service import SQLService
 from src.database.conn_db import Database
 from src.core.utils import dataframe_to_json, sanitize_sql
+from src.core.tool import tools
 
 
 class Workflow:
@@ -93,7 +94,7 @@ class Workflow:
             df = self.sql_service.execute(sql)
             data = dataframe_to_json(df)
             list_data = state.get("list_data", [])
-            list_data.append(data)
+            list_data.append((state.get("question"), data))
             state.update(list_data=list_data, next_node="data_to_answer")
         except Exception as e:
             stream_writer("ERROR:Lỗi khi lấy dữ liệu!")
@@ -129,13 +130,12 @@ class Workflow:
         stream_writer = get_stream_writer()
         stream_writer("INFO:Đang tạo câu trả lời ...")
         try:
-            chain = assistant_prompt | assistant_model
+            chain = assistant_prompt | assistant_model.bind_tools(tools)
             response = await chain.ainvoke(
                 {
-                    "data_provided": state.get("list_data")[-1],
+                    "data_provided": state.get("list_data")[-1][1],
                     "question": state.get("question"),
                     "messages": state.get("messages"),
-                    "sql": state.get("sql"),
                 }
             )
             # solution_plan = getattr(response, "solution_plan", "NO")
@@ -158,7 +158,7 @@ class Workflow:
         stream_writer = get_stream_writer()
         stream_writer("INFO:Đang tạo câu trả lời ...")
         try:
-            chain = assistant_no_data_prompt | assistant_model
+            chain = assistant_no_data_prompt | assistant_model.bind_tools(tools)
             response = await chain.ainvoke(
                 {
                     "messages": state.get("messages"),
@@ -202,7 +202,7 @@ class Workflow:
         graph.add_node("simple_question", self._simple_question)
         graph.add_node("question_detail", self.question_detail)
         graph.add_node("sql_fix", self._sql_fix)
-        graph.add_node("solution_plan", self._solution_plan)
+        # graph.add_node("solution_plan", self._solution_plan)
         graph.set_entry_point("question_to_sql")
         graph.add_conditional_edges(
             "question_to_sql",
@@ -229,9 +229,9 @@ class Workflow:
         graph.add_conditional_edges(
             "data_to_answer",
             self._route,
-            {"__end__": "__end__", "solution_plan": "solution_plan"},
+            {"__end__": "__end__"},  # , "solution_plan": "solution_plan"},
         )
-        graph.add_edge("solution_plan", "__end__")
+        # graph.add_edge("solution_plan", "__end__")
 
         return graph.compile()  # checkpointer=MemorySaver())
 

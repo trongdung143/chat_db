@@ -3,7 +3,7 @@ from src.setup import OPENROUTER_API_KEY
 from src.core.schema import AssistantResponse
 
 sql_model = ChatOpenAI(
-    model="google/gemini-3-flash-preview",
+    model="openai/gpt-oss-120b",
     temperature=0,
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
@@ -12,7 +12,7 @@ sql_model = ChatOpenAI(
 )
 
 assistant_model = ChatOpenAI(
-    model="google/gemini-2.5-flash",
+    model="openai/gpt-4o-mini",
     temperature=0,
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
@@ -21,6 +21,16 @@ assistant_model = ChatOpenAI(
 
 
 sql_fix_model = ChatOpenAI(
+    model="openai/gpt-oss-120b",
+    temperature=0,
+    base_url="https://openrouter.ai/api/v1",
+    api_key=OPENROUTER_API_KEY,
+    streaming=True,
+    reasoning_effort="high",
+)
+
+
+solution_plan_model = ChatOpenAI(
     model="google/gemini-2.5-flash",
     temperature=0,
     base_url="https://openrouter.ai/api/v1",
@@ -29,8 +39,8 @@ sql_fix_model = ChatOpenAI(
 )
 
 
-solution_plan_model = ChatOpenAI(
-    model="google/gemini-2.5-flash",
+business_rule_model = ChatOpenAI(
+    model="openai/gpt-4o-mini",
     temperature=0,
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
