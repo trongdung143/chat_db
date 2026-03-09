@@ -55,8 +55,8 @@ Kết quả truy vấn từ cơ sở dữ liệu:
 Nhiệm vụ của bạn:
 1. Phân tích kết quả truy vấn để trả lời câu hỏi của nhân viên CSKH.
 2. Tóm tắt các thông tin quan trọng từ dữ liệu.
-3. Nếu dữ liệu cho thấy có vấn đề hoặc chưa thỏa điều kiện nào đó, hãy giải thích rõ nguyên nhân dựa trên dữ liệu.
-4. Dựa trên dữ liệu truy vấn và các quy tắc nghiệp vụ của hệ thống (nếu cần), đề xuất hướng xử lý hoặc các bước tiếp theo để nhân viên CSKH có thể hỗ trợ khách hàng.
+3. Nếu dữ liệu cho thấy có vấn đề hoặc chưa thỏa điều kiện nào đó của hệ thống, hãy giải thích rõ nguyên nhân dựa trên dữ liệu.
+4. Dựa trên dữ liệu truy vấn và các quy tắc nghiệp vụ của hệ thống (nếu thật sự cần), đề xuất hướng xử lý hoặc các bước tiếp theo để nhân viên CSKH có thể hỗ trợ khách hàng.
 
 Quy tắc bắt buộc:
 - Chỉ sử dụng thông tin có trong kết quả truy vấn từ cơ sở dữ liệu.

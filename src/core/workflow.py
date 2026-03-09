@@ -9,7 +9,7 @@ from src.core.model import (
     sql_model,
     assistant_model,
     sql_fix_model,
-    solution_plan_model,
+    # solution_plan_model,
 )
 from src.core.state import State
 from src.core.prompt import (
@@ -17,7 +17,7 @@ from src.core.prompt import (
     assistant_prompt,
     assistant_no_data_prompt,
     sql_fix_prompt,
-    solution_plan_prompt,
+    # solution_plan_prompt,
 )
 from src.database.schema_db import FULL_SCHEMA_SAMPLE_DATA, FULL_SCHEMA
 from src.services.sql_service import SQLService
@@ -30,6 +30,7 @@ class Workflow:
     def __init__(self):
         self.db = Database()
         self.sql_service = SQLService(self.db)
+        self.checkpointer = MemorySaver()
         self.nodes = [
             "question_to_sql",
             "sql_to_data",
@@ -178,7 +179,8 @@ class Workflow:
         stream_writer = get_stream_writer()
         stream_writer("INFO:Đang đề xuất hướng giải quyết ...")
         try:
-            chain = solution_plan_prompt | solution_plan_model
+            pass
+            # chain = solution_plan_prompt | solution_plan_model
             # response = await chain.ainvoke(
             #     {
             #         "messages": state.get("messages"),
@@ -233,7 +235,7 @@ class Workflow:
         )
         # graph.add_edge("solution_plan", "__end__")
 
-        return graph.compile()  # checkpointer=MemorySaver())
+        return graph.compile(checkpointer=self.checkpointer)
 
     def get_workflow(self):
         return self.graph

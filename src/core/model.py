@@ -12,7 +12,7 @@ sql_model = ChatOpenAI(
 )
 
 assistant_model = ChatOpenAI(
-    model="openai/gpt-4o-mini",
+    model="google/gemini-2.5-flash",
     temperature=0,
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
@@ -41,6 +41,15 @@ solution_plan_model = ChatOpenAI(
 
 business_rule_model = ChatOpenAI(
     model="openai/gpt-4o-mini",
+    temperature=0,
+    base_url="https://openrouter.ai/api/v1",
+    api_key=OPENROUTER_API_KEY,
+    streaming=True,
+)
+
+
+embedding_model = ChatOpenAI(
+    model="google/gemini-embedding-001",
     temperature=0,
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,

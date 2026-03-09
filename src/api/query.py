@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse, StreamingResponse
-from langgraph import graph
 from pydantic import BaseModel
 import os
 from langgraph.types import Command
-from src.dependencies import get_workflow
 import json
 from langchain_core.messages import HumanMessage, AIMessageChunk
 import asyncio
+
 from src.core.workflow import Workflow
+from src.dependencies import get_workflow
 
 clients = {}
 
@@ -59,8 +59,13 @@ async def register_client(client: ClientID):
 
 
 @router.get("/clear_client")
-async def clear_client(client_id: str):
+async def clear_client(
+    client_id: str,
+    workflow: Workflow = Depends(get_workflow),
+):
     """Clear/remove a client from the server"""
+    graph = workflow.get_workflow()
+    graph.set
     if client_id in clients:
         del clients[client_id]
         return {"success": True, "message": "Client đã xóa"}
