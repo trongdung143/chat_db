@@ -9,9 +9,10 @@ from contextlib import asynccontextmanager
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     workflow = Workflow()
+    clients = {}
     await workflow.build_workflow()
     app.state.workflow = workflow
-
+    app.state.clients = clients
     yield
 
 

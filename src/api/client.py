@@ -4,8 +4,7 @@ from pydantic import BaseModel
 import os
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from src.core.workflow import Workflow
-
-clients = {}
+from src.services.checkpoint_service import clear_thread
 
 
 class ClientID(BaseModel):
@@ -28,13 +27,15 @@ async def get_chat_page():
 
 
 @router.get("/check")
-async def check_client(client_id: str):
+async def check_client(client_id: str, request: Request):
+    clients = request.app.state.clients
     exists = client_id in clients
     return {"exists": exists, "client_id": client_id}
 
 
 @router.post("/register")
-async def register_client(client: ClientID):
+async def register_client(client: ClientID, request: Request):
+    clients = request.app.state.clients
     if not client.client_id or client.client_id.strip() == "":
         return {"success": False, "message": "Client ID không được để trống"}
 
@@ -52,6 +53,7 @@ async def register_client(client: ClientID):
 @router.get("/clear")
 async def clear_client(client_id: str, request: Request):
     """Clear/remove a client from the server"""
+    clients = request.app.state.clients
     workflow: Workflow = request.app.state.workflow
     checkpointer: AsyncPostgresSaver = workflow.get_checkpointer()
     config = {
@@ -60,6 +62,7 @@ async def clear_client(client_id: str, request: Request):
         }
     }
     await checkpointer.adelete_thread(config)
+    await clear_thread(client_id)
     if client_id in clients:
         del clients[client_id]
         return {"success": True, "message": "Client đã xóa"}

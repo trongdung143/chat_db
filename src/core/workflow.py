@@ -4,6 +4,7 @@ from langgraph.config import get_stream_writer
 from langsmith import traceable
 from langgraph.types import interrupt
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from langgraph.prebuilt.tool_node import ToolNode, tools_condition
 
 from src.core.model import (
     sql_model,
@@ -40,11 +41,15 @@ class Workflow:
             "__end__",
         ]
         self._graph = None
+        self._tools_01 = ToolNode(tools)
+        self._tools_02 = ToolNode(tools)
 
     def _route(self, state: State) -> str:
         next_node = state.get("next_node")
+
         if next_node in self._nodes:
             return state.get("next_node")
+
         return "__end__"
 
     @traceable
@@ -130,6 +135,7 @@ class Workflow:
         stream_writer = get_stream_writer()
         stream_writer("INFO:Đang tạo câu trả lời ...")
         try:
+
             chain = assistant_prompt | assistant_model.bind_tools(tools)
             response = await chain.ainvoke(
                 {
@@ -144,9 +150,10 @@ class Workflow:
             #     next_node = "solution_plan"
             # else:
             #     next_node = "__end__"
+
             state.update(
                 answer=response.content,
-                messages=[AIMessage(content=response.content)],
+                messages=[response],
                 next_node="__end__",
             )
         except Exception as e:
@@ -158,15 +165,17 @@ class Workflow:
         stream_writer = get_stream_writer()
         stream_writer("INFO:Đang tạo câu trả lời ...")
         try:
+
             chain = assistant_no_data_prompt | assistant_model.bind_tools(tools)
             response = await chain.ainvoke(
                 {
                     "messages": state.get("messages"),
                 }
             )
+
             state.update(
                 answer=response.content,
-                messages=[AIMessage(content=response.content)],
+                messages=[response],
                 next_node="__end__",
             )
         except Exception as e:
@@ -203,6 +212,8 @@ class Workflow:
         graph.add_node("simple_question", self._simple_question)
         graph.add_node("question_detail", self.question_detail)
         graph.add_node("sql_fix", self._sql_fix)
+        graph.add_node("tools_01", self._tools_01)
+        graph.add_node("tools_02", self._tools_02)
         # graph.add_node("solution_plan", self._solution_plan)
         graph.set_entry_point("question_to_sql")
         graph.add_conditional_edges(
@@ -225,13 +236,25 @@ class Workflow:
         )
         graph.add_edge("sql_fix", "sql_to_data")
         graph.add_edge("question_detail", "question_to_sql")
-        graph.add_edge("simple_question", "__end__")
+        graph.add_conditional_edges(
+            "simple_question",
+            tools_condition,
+            {
+                "__end__": "__end__",
+                "tools": "tools_01",
+            },  # , "solution_plan": "solution_plan"},
+        )
+        graph.add_edge("tools_01", "simple_question")
         # graph.add_edge("data_to_answer", "__end__")
         graph.add_conditional_edges(
             "data_to_answer",
-            self._route,
-            {"__end__": "__end__"},  # , "solution_plan": "solution_plan"},
+            tools_condition,
+            {
+                "__end__": "__end__",
+                "tools": "tools_02",
+            },  # , "solution_plan": "solution_plan"},
         )
+        graph.add_edge("tools_02", "data_to_answer")
         # graph.add_edge("solution_plan", "__end__")
         return graph.compile(checkpointer=self._checkpointer)
 

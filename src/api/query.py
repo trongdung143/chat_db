@@ -18,6 +18,10 @@ router = APIRouter()
 @router.get("/query/v1")
 async def query(message: str, client_id: str, request: Request):
     async def generate():
+        clients = request.app.state.clients
+        if client_id not in clients:
+            yield f"data: {json.dumps({'type': 'step', 'response': "ERROR:Vui lòng tải lại trang!"}, ensure_ascii=False)}\n\n"
+            return
         if not message.strip():
             yield f"data: {json.dumps({'type': 'step', 'response': "ERROR:Nhập câu hỏi!"}, ensure_ascii=False)}\n\n"
             return

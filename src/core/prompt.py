@@ -32,6 +32,10 @@ NEED_MORE_INFO
 
 8. Kết quả truy vấn luôn phải bao gồm ít nhất một cột định danh duy nhất của mỗi bản ghi
 để có thể phân biệt dữ liệu.
+
+9. Nếu cần thêm thông tin để tạo câu SQL chính xác, bạn có thể gọi tool phù hợp để lấy dữ liệu cần thiết (trước khi tạo câu SQL).
+
+10. Chỉ sau khi đã có đủ thông tin, mới tạo câu SQL.
             """,
         ),
         ("human", "{messages}"),

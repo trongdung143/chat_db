@@ -18,7 +18,6 @@ RUN apt-get update \
     && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
     && rm -rf /var/lib/apt/lists/*
 
-# ✅ Fix TLS cho Windows Server 2012
 RUN sed -i 's/\[openssl_init\]/[openssl_init]\nssl_conf = ssl_sect/' /etc/ssl/openssl.cnf \
     && echo "\n[ssl_sect]\nsystem_default = system_default_sect\n\n[system_default_sect]\nMinProtocol = TLSv1\nCipherString = DEFAULT@SECLEVEL=0\nOptions = UnsafeLegacyRenegotiation" \
     >> /etc/ssl/openssl.cnf

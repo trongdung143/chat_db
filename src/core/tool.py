@@ -5,8 +5,10 @@ from src.core.model import business_rule_model
 
 
 @tool
-def get_time() -> str:
+def get_time(runtime: ToolRuntime) -> str:
     """Lấy thời gian hiện tại."""
+    writer = runtime.stream_writer
+    writer("INFO:Đang lấy thời gian ...")
     now = datetime.now()
     return now.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -82,7 +84,7 @@ async def get_business_rules(topic: str, runtime: ToolRuntime) -> str:
     - Trong vòng 12 tháng kể từ ngày đạt hạng SUN, nếu khách hàng
     không đủ điều kiện duy trì hạng SUN thì hệ thống sẽ xét hạ xuống hạng SKY.
     """
-    chain = business_rule_model | business_rule_model
+    chain = business_rule_prompt | business_rule_model
     try:
         response = await chain.ainvoke(
             {"business_rules": BUSINESS_RULES, "topic": topic}
