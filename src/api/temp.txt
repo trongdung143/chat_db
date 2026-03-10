@@ -1,0 +1,15 @@
+"cho tôi 1 khách hàng có thẻ sun"
+    {
+        "question": "cho tôi 1 khách hàng có thẻ sun",
+        "messages": [
+            {
+            "content": "cho tôi 1 khách hàng có thẻ sun",
+            "type": "human"
+            }
+        ],
+        "answer": "",
+        "next_node": "",
+        "sql": "",
+        "sql_error_msg": "",
+        "sql_fix_count": 0
+    }

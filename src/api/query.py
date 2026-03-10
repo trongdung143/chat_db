@@ -1,15 +1,11 @@
-from fastapi import APIRouter
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi import APIRouter, Request
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-import os
-from src.core.chain import graph
-from src.connection import engine
+from langgraph.types import Command
 import json
-import re
 from langchain_core.messages import HumanMessage, AIMessageChunk
-from fastapi import HTTPException
 import asyncio
-import pandas as pd
+from langgraph.graph.state import CompiledStateGraph
 
 
 class SQLRequest(BaseModel):
@@ -18,72 +14,62 @@ class SQLRequest(BaseModel):
 
 router = APIRouter()
 
-BASE_DIR = os.path.dirname(__file__)
-STATIC_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "static"))
 
-
-@router.get("/", response_class=HTMLResponse)
-async def get_chat_page():
-    html_path = os.path.join(STATIC_DIR, "query.html")
-    if not os.path.exists(html_path):
-        return HTMLResponse("<h3>Chat page not found.</h3>", status_code=404)
-    with open(html_path, "r", encoding="utf-8") as f:
-        return f.read()
-
-
-@router.get("/query")
-async def query(message: str):
+@router.get("/query/v1")
+async def query(message: str, client_id: str, request: Request):
     async def generate():
-        full_response = ""
+        if not message.strip():
+            yield f"data: {json.dumps({'type': 'step', 'response': "ERROR:Nhập câu hỏi!"}, ensure_ascii=False)}\n\n"
+            return
+        graph: CompiledStateGraph = request.app.state.workflow.get_graph()
         input_state = {
+            "question": message,
             "messages": HumanMessage(content=message),
+            "answer": "",
+            "next_node": "",
+            "sql": "",
+            "sql_error_msg": "",
+            "sql_fix_count": 0,
         }
 
         config = {
             "configurable": {
-                "thread_id": "123",
+                "thread_id": client_id,
             }
         }
-        async for chunk in graph.astream(input_state, config, stream_mode="messages"):
-            response, meta = chunk
-            if isinstance(response, AIMessageChunk):
-                full_response += response.content
-                for c in response.content:
-                    await asyncio.sleep(0.01)
-                    yield f"data: {json.dumps({'type': 'chunk', 'response': c}, ensure_ascii=False)}\n\n"
 
-        match = re.search(
-            r"---SQL START---(.*?)---SQL END---", full_response, re.DOTALL
-        )
-        sql = match.group(1).strip() if match else ""
+        state = await graph.aget_state(config=config)
+        interrupt = state.interrupts
 
-        yield f"data: {json.dumps({'type': 'sql', 'response': sql}, ensure_ascii=False)}\n\n"
+        if interrupt:
+            input_state = Command(resume=message)
+
+        async for event in graph.astream(
+            input=input_state,
+            config=config,
+            stream_mode=["messages", "updates", "custom"],
+            subgraphs=True,
+        ):
+            subgraph, data_type, chunk = event
+            if data_type == "messages":
+                response, meta = chunk
+                langgraph_node = meta.get("langgraph_node")
+                if langgraph_node in [
+                    "data_to_answer",
+                    "simple_question",
+                ] and isinstance(response, AIMessageChunk):
+                    for char in response.content:
+                        await asyncio.sleep(0.01)
+                        yield f"data: {json.dumps({'type': 'chunk', 'response': char}, ensure_ascii=False)}\n\n"
+            if data_type == "updates":
+                if chunk.get("__interrupt__"):
+                    for interrupt in chunk["__interrupt__"]:
+                        yield f"data: {json.dumps({'type': 'chunk',
+                                                    'response': interrupt.value
+                                                }, ensure_ascii=False)}\n\n"
+            elif data_type == "custom":
+                yield f"data: {json.dumps({'type': 'step', 'response': chunk.strip()}, ensure_ascii=False)}\n\n"
+
+        yield f"data: {json.dumps({'type': 'status', 'response': "done"}, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(generate(), media_type="text/event-stream")
-
-
-@router.post("/get_data")
-async def get_data(request: SQLRequest):
-    sql = request.sql
-
-    try:
-        (sql)
-
-        sql_type = sql.strip().split()[0].upper()
-
-        if sql_type == "SELECT":
-            if cursor.description is None:
-                return []
-
-            columns = [desc[0] for desc in cursor.description]
-            rows = cursor.fetchall()
-            data = [dict(zip(columns, row)) for row in rows]
-            return data
-
-        else:
-            conn.commit()  #
-            return [{"affected_rows": cursor.rowcount}]
-
-    except Exception as e:
-        conn.rollback()  #
-        raise HTTPException(status_code=400, detail=str(e))

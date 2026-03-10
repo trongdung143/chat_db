@@ -1,4 +1,16 @@
-from langchain_core.prompts import ChatPromptTemplate
+      Định dạng đầu ra (bắt buộc):
+            {
+            "content": "Câu trả lời cho nhân viên chăm sóc khách hàng",
+            "solution_plan": "YES" hoặc "NO"
+            }
+
+            Trong đó:
+            - solution_plan = "YES" nếu cần gợi ý thêm hướng xử lý hoặc giải pháp cho vấn đề.
+            - solution_plan = "NO" nếu chỉ cần trả lời dựa trên dữ liệu.
+
+
+
+            from langchain_core.prompts import ChatPromptTemplate
 
 sql_prompt = ChatPromptTemplate.from_messages(
     [
@@ -53,10 +65,9 @@ Kết quả truy vấn từ cơ sở dữ liệu:
 {data_provided}
 
 Nhiệm vụ của bạn:
-1. Phân tích kết quả truy vấn để trả lời câu hỏi của nhân viên CSKH.
-2. Tóm tắt các thông tin quan trọng từ dữ liệu.
-3. Nếu dữ liệu cho thấy có vấn đề hoặc chưa thỏa điều kiện nào đó của hệ thống, hãy giải thích rõ nguyên nhân dựa trên dữ liệu.
-4. Dựa trên dữ liệu truy vấn và các quy tắc nghiệp vụ của hệ thống (nếu thật sự cần), đề xuất hướng xử lý hoặc các bước tiếp theo để nhân viên CSKH có thể hỗ trợ khách hàng.
+1. Trả lời câu hỏi của nhân viên CSKH từ dữ liệu truy vấn.
+2. Nếu dữ liệu cho thấy có vấn đề hoặc chưa thỏa điều kiện nào đó của quy tắc nghiệp vụ, hãy giải thích rõ nguyên nhân dựa trên dữ liệu.
+3. Dựa trên dữ liệu truy vấn và các quy tắc nghiệp vụ của hệ thống (nếu thật sự cần), đề xuất hướng xử lý hoặc các bước tiếp theo để nhân viên CSKH có thể hỗ trợ khách hàng.
 
 Quy tắc bắt buộc:
 - Chỉ sử dụng thông tin có trong kết quả truy vấn từ cơ sở dữ liệu.
