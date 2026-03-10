@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
     unixodbc-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Microsoft repo
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
     | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
 
@@ -25,7 +24,6 @@ RUN apt-get update \
     && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
     && rm -rf /var/lib/apt/lists/*
 
-# install uv
 RUN pip install uv
 
 COPY requirements.txt .
@@ -37,5 +35,4 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-# Use environment variable for port
 CMD uv run uvicorn src.main:app --host 0.0.0.0 --port $PORT

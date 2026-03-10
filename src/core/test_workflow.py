@@ -3,7 +3,6 @@ from langchain_core.messages import AIMessage
 from langgraph.config import get_stream_writer
 from langsmith import traceable
 from langgraph.types import interrupt
-from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 from src.core.model import (
     sql_model,
@@ -22,14 +21,14 @@ from src.services.sql_service import SQLService
 from src.database.conn_db import Database
 from src.core.utils import dataframe_to_json, sanitize_sql
 from src.core.tool import tools
-from src.setup import DB_CHECKPOINT
+from langgraph.checkpoint.memory import InMemorySaver
 
 
 class Workflow:
     def __init__(self):
         self._db = Database()
         self._sql_service = SQLService(self._db)
-        self._checkpointer = None
+        self._checkpointer = InMemorySaver()
         self._nodes = [
             "question_to_sql",
             "sql_to_data",
@@ -39,7 +38,7 @@ class Workflow:
             "sql_fix",
             "__end__",
         ]
-        self._graph = None
+        self._graph = self._build_graph()
 
     def _route(self, state: State) -> str:
         next_node = state.get("next_node")
@@ -91,7 +90,7 @@ class Workflow:
         try:
             sql = state.get("sql")
             sql = sanitize_sql(sql)
-            df = self._sql_service.execute(sql)
+            df = await self._sql_service.execute(sql)
             data = dataframe_to_json(df)
             list_data = state.get("list_data", [])
             list_data.append((state.get("question"), data))
@@ -233,17 +232,7 @@ class Workflow:
             {"__end__": "__end__"},  # , "solution_plan": "solution_plan"},
         )
         # graph.add_edge("solution_plan", "__end__")
-        return graph.compile(checkpointer=self._checkpointer)
+        return graph.compile()  # checkpointer=self._checkpointer)
 
     def get_graph(self):
         return self._graph
-
-    def get_checkpointer(self):
-        if self._checkpointer:
-            return self._checkpointer
-
-    async def build_workflow(self):
-        self._checkpointer_cm = AsyncPostgresSaver.from_conn_string(DB_CHECKPOINT)
-        self._checkpointer = await self._checkpointer_cm.__aenter__()
-        await self._checkpointer.setup()
-        self._graph = self._build_graph()
