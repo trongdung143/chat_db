@@ -11,10 +11,12 @@ class Database:
             "DATABASE=" + DB_DATABASE + ";"
             "UID=" + DB_UID + ";"
             "PWD=" + DB_PWD + ";"
+            "Encrypt=no;"
+            "TrustServerCertificate=yes;"
         )
 
         self.engine = create_async_engine(
-            f"mssql+aioodbc:///?odbc_connect={params}",
+            f"mssql+aioodbc:///?odbc_connect={params}&Encrypt=no",
             pool_size=10,
             max_overflow=20,
             pool_timeout=30,
