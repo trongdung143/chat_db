@@ -91,7 +91,7 @@ class Workflow:
         try:
             sql = state.get("sql")
             sql = sanitize_sql(sql)
-            df = self._sql_service.execute(sql)
+            df = await self._sql_service.execute(sql)
             data = dataframe_to_json(df)
             list_data = state.get("list_data", [])
             list_data.append((state.get("question"), data))
