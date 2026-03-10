@@ -1,5 +1,7 @@
-from src.core.workflow import Workflow
+import asyncio
+import uvicorn
 
-workflow = Workflow()
+if __name__ == "__main__":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-graph = workflow.get_workflow()
+    uvicorn.run("src.main:app", host="0.0.0.0", port=8080, reload=True)

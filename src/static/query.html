@@ -418,7 +418,7 @@
 
             // Clear from server if exists
             if (savedId) {
-                fetch(`/clear_client?client_id=${encodeURIComponent(savedId)}`).catch(e => console.log(e));
+                fetch(`/client/v1/clear?client_id=${encodeURIComponent(savedId)}`).catch(e => console.log(e));
             }
 
             // Clear localStorage
@@ -444,7 +444,7 @@
 
             try {
                 // Check if client exists
-                const checkRes = await fetch(`/check_client?client_id=${encodeURIComponent(clientId)}`);
+                const checkRes = await fetch(`/client/v1/check?client_id=${encodeURIComponent(clientId)}`);
                 const checkData = await checkRes.json();
 
                 if (checkData.exists) {
@@ -454,7 +454,7 @@
                 }
 
                 // Register new client
-                const regRes = await fetch('/register_client', {
+                const regRes = await fetch('/client/v1/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ client_id: clientId })
@@ -585,7 +585,7 @@
 
             // Send message with client_id
             currentEventSource = new EventSource(
-                `/query?message=${encodeURIComponent(text)}&client_id=${encodeURIComponent(currentClientId)}`
+                `/query/v1?message=${encodeURIComponent(text)}&client_id=${encodeURIComponent(currentClientId)}`
             );
 
             currentEventSource.onmessage = (event) => {

@@ -8,8 +8,11 @@ langsmith
 huggingface_hub[hf_xet]
 langgraph-cli[inmem]
 pyodbc
+aioodbc
 langchain_openai 
+langchain-google-genai
 pandas
 sqlalchemy 
 sqlparse
 langgraph-checkpoint-postgres
+psycopg[binary,pool]

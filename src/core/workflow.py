@@ -1,15 +1,14 @@
 from langgraph.graph import StateGraph
-from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import AIMessage
 from langgraph.config import get_stream_writer
 from langsmith import traceable
 from langgraph.types import interrupt
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 from src.core.model import (
     sql_model,
     assistant_model,
     sql_fix_model,
-    # solution_plan_model,
 )
 from src.core.state import State
 from src.core.prompt import (
@@ -17,21 +16,21 @@ from src.core.prompt import (
     assistant_prompt,
     assistant_no_data_prompt,
     sql_fix_prompt,
-    # solution_plan_prompt,
 )
-from src.database.schema_db import FULL_SCHEMA_SAMPLE_DATA, FULL_SCHEMA
+from src.database.schema_db import FULL_SCHEMA
 from src.services.sql_service import SQLService
 from src.database.conn_db import Database
 from src.core.utils import dataframe_to_json, sanitize_sql
 from src.core.tool import tools
+from src.setup import DB_CHECKPOINT
 
 
 class Workflow:
     def __init__(self):
-        self.db = Database()
-        self.sql_service = SQLService(self.db)
-        self.checkpointer = MemorySaver()
-        self.nodes = [
+        self._db = Database()
+        self._sql_service = SQLService(self._db)
+        self._checkpointer = None
+        self._nodes = [
             "question_to_sql",
             "sql_to_data",
             "data_to_answer",
@@ -40,11 +39,11 @@ class Workflow:
             "sql_fix",
             "__end__",
         ]
-        self.graph = self._build_graph()
+        self._graph = None
 
     def _route(self, state: State) -> str:
         next_node = state.get("next_node")
-        if next_node in self.nodes:
+        if next_node in self._nodes:
             return state.get("next_node")
         return "__end__"
 
@@ -92,7 +91,7 @@ class Workflow:
         try:
             sql = state.get("sql")
             sql = sanitize_sql(sql)
-            df = self.sql_service.execute(sql)
+            df = await self._sql_service.execute(sql)
             data = dataframe_to_json(df)
             list_data = state.get("list_data", [])
             list_data.append((state.get("question"), data))
@@ -234,8 +233,17 @@ class Workflow:
             {"__end__": "__end__"},  # , "solution_plan": "solution_plan"},
         )
         # graph.add_edge("solution_plan", "__end__")
+        return graph.compile(checkpointer=self._checkpointer)
 
-        return graph.compile(checkpointer=self.checkpointer)
+    def get_graph(self):
+        return self._graph
 
-    def get_workflow(self):
-        return self.graph
+    def get_checkpointer(self):
+        if self._checkpointer:
+            return self._checkpointer
+
+    async def build_workflow(self):
+        self._checkpointer_cm = AsyncPostgresSaver.from_conn_string(DB_CHECKPOINT)
+        self._checkpointer = await self._checkpointer_cm.__aenter__()
+        await self._checkpointer.setup()
+        self._graph = self._build_graph()

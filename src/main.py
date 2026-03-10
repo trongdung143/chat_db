@@ -1,17 +1,21 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from src.api import query
+from src.api import query, client
 from src.core.workflow import Workflow
-
-workflow = Workflow()
-
-
-def get_workflow():
-    return workflow.get_workflow()
+from contextlib import asynccontextmanager
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    workflow = Workflow()
+    await workflow.build_workflow()
+    app.state.workflow = workflow
+
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 app.add_middleware(
@@ -47,3 +51,4 @@ async def block_malicious_requests(request: Request, call_next):
 
 
 app.include_router(query.router)
+app.include_router(client.router)

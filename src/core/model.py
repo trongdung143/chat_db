@@ -9,14 +9,15 @@ sql_model = ChatOpenAI(
     api_key=OPENROUTER_API_KEY,
     streaming=True,
     reasoning_effort="high",
+    timeout=10.0,
 )
 
 assistant_model = ChatOpenAI(
-    model="google/gemini-2.5-flash",
-    temperature=0,
+    model="openai/gpt-4o-mini",  # openai/gpt-oss-20b or openai/gpt-5-nano
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
     streaming=True,
+    timeout=5.0,
 )  # .with_structured_output(AssistantResponse)
 
 
@@ -27,16 +28,18 @@ sql_fix_model = ChatOpenAI(
     api_key=OPENROUTER_API_KEY,
     streaming=True,
     reasoning_effort="high",
+    timeout=5.0,
 )
 
 
-solution_plan_model = ChatOpenAI(
-    model="google/gemini-2.5-flash",
-    temperature=0,
-    base_url="https://openrouter.ai/api/v1",
-    api_key=OPENROUTER_API_KEY,
-    streaming=True,
-)
+# solution_plan_model = ChatOpenAI(
+#     model="google/gemini-2.5-flash",
+#     temperature=0,
+#     base_url="https://openrouter.ai/api/v1",
+#     api_key=OPENROUTER_API_KEY,
+#     streaming=True,
+#     timeout=5.0,
+# )
 
 
 business_rule_model = ChatOpenAI(
@@ -45,6 +48,7 @@ business_rule_model = ChatOpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
     streaming=True,
+    timeout=5.0,
 )
 
 
@@ -54,4 +58,5 @@ embedding_model = ChatOpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
     streaming=True,
+    timeout=5.0,
 )

@@ -11,13 +11,17 @@ class SQLService:
         if not sql.strip().lower().startswith("select"):
             raise ValueError("Only SELECT queries are allowed.")
 
-    def execute(self, sql: str) -> pd.DataFrame | str:
+    async def execute(self, sql: str) -> pd.DataFrame | str:
         try:
             self._validate_query(sql)
 
-            with self.database.get_session() as session:
-                result = session.execute(text(sql))
-                df = pd.DataFrame(result.fetchall(), columns=result.keys())
+            async with self.database.get_session() as session:
+                result = await session.execute(text(sql))
+
+                rows = result.fetchall()
+                df = pd.DataFrame(rows, columns=result.keys())
+
                 return df
+
         except Exception as e:
             raise RuntimeError(str(e))

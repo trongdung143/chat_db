@@ -10,7 +10,6 @@ PRIMARY KEY:
 - Id
 
 COLUMNS:
-
 - Id (uniqueidentifier): Khóa chính của khách hàng. Được dùng để liên kết tới CardCustomers.CustomerId và TransactionHistories.CustomerId.
 - Code (varchar): Mã định danh khách hàng trong hệ thống.
 - Ho (nvarchar): Họ của khách hàng.

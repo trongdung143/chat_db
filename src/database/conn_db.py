@@ -1,5 +1,4 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 import urllib
 from src.setup import DB_DRIVER, DB_SERVER, DB_DATABASE, DB_UID, DB_PWD
 
@@ -14,14 +13,17 @@ class Database:
             "PWD=" + DB_PWD + ";"
         )
 
-        self.engine = create_engine(
-            f"mssql+pyodbc:///?odbc_connect={params}",
+        self.engine = create_async_engine(
+            f"mssql+aioodbc:///?odbc_connect={params}",
             pool_size=10,
             max_overflow=20,
             pool_timeout=30,
         )
 
-        self.SessionLocal = sessionmaker(bind=self.engine)
+        self.SessionLocal = async_sessionmaker(
+            bind=self.engine,
+            expire_on_commit=False,
+        )
 
     def get_session(self):
         return self.SessionLocal()
