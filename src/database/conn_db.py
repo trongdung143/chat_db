@@ -16,7 +16,7 @@ class Database:
         )
 
         self.engine = create_async_engine(
-            f"mssql+aioodbc:///?odbc_connect={params}&Encrypt=no",
+            f"mssql+aioodbc:///?odbc_connect={params}",
             pool_size=10,
             max_overflow=20,
             pool_timeout=30,
