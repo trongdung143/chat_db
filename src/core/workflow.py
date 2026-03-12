@@ -93,11 +93,14 @@ class Workflow:
     async def _sql_to_data(self, state: State) -> State:
         stream_writer = get_stream_writer()
         stream_writer("INFO:Đang lấy dữ liệu ...")
+
         try:
             sql = state.get("sql")
             sql = sanitize_sql(sql)
+
             df = await self._sql_service.execute(sql)
             data = dataframe_to_json(df)
+
             list_data = state.get("list_data", [])
             list_data.append({"question": state.get("question"), "data": data})
             state.update(list_data=list_data, next_node="data_to_answer")
@@ -114,9 +117,11 @@ class Workflow:
     async def _sql_fix(self, state: State) -> State:
         stream_writer = get_stream_writer()
         stream_writer("INFO:Đang sửa câu truy vấn ...")
-        state.update(sql_fix_count=state.get("sql_fix_count") + 1)
+
         try:
+            state.update(sql_fix_count=state.get("sql_fix_count") + 1)
             chain = sql_fix_prompt | sql_fix_model
+
             response = await chain.ainvoke(
                 {
                     "sql": state.get("sql"),
@@ -124,6 +129,7 @@ class Workflow:
                     "tables_description": FULL_SCHEMA,
                 }
             )
+
             sql = sanitize_sql(response.content)
             state.update(sql=sql, next_node="sql_to_data")
         except Exception as e:
@@ -134,6 +140,7 @@ class Workflow:
     async def _data_to_answer(self, state: State) -> State:
         stream_writer = get_stream_writer()
         stream_writer("INFO:Đang tạo câu trả lời ...")
+
         try:
 
             chain = assistant_prompt | assistant_model.bind_tools(tools)
@@ -186,6 +193,7 @@ class Workflow:
     async def _solution_plan(self, state: State) -> State:
         stream_writer = get_stream_writer()
         stream_writer("INFO:Đang đề xuất hướng giải quyết ...")
+
         try:
             pass
             # chain = solution_plan_prompt | solution_plan_model
