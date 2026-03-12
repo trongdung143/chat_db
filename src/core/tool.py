@@ -6,11 +6,15 @@ from src.core.model import business_rule_model
 
 @tool
 def get_time(runtime: ToolRuntime) -> str:
-    """Lấy thời gian hiện tại."""
+    """
+    Trả về thời gian hiện tại của hệ thống.
+    Dùng khi cần mốc thời gian hiện tại để phục vụ việc suy luận,
+    so sánh với các mốc thời gian khác hoặc trả lời câu hỏi liên quan đến ngày giờ.
+    """
     writer = runtime.stream_writer
     writer("INFO:Đang lấy thời gian ...")
     now = datetime.now()
-    return now.strftime("%Y-%m-%d %H:%M:%S")
+    return f"Thời gian hiện tại là {now.strftime("%Y-%m-%d %H:%M:%S")}"
 
 
 @tool
