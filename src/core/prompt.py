@@ -31,9 +31,12 @@ SIMPLE_QUESTION
 - Hạn chế số lượng dòng trả về khi phù hợp (ví dụ: TOP).
 - Tránh truy vấn toàn bộ bảng nếu không cần thiết.
 
-6. Khi truy vấn dữ liệu của một khách hàng cụ thể, hãy sử dụng thông tin định danh
-(số điện thoại hoặc mã khách hàng) đã xuất hiện trong lịch sử hội thoại nếu có.
-Chỉ khi không có hoặc không rõ khách hàng nào thì mới trả về:
+6. Khi truy vấn dữ liệu của một khách hàng cụ thể, bắt buộc phải sử dụng
+thông tin định danh của khách hàng (số điện thoại hoặc mã khách hàng)
+đã xuất hiện trong lịch sử hội thoại để tạo câu SQL.
+
+Nếu không xác định được khách hàng do không có số điện thoại hoặc mã khách hàng,
+hãy trả về duy nhất:
 NEED_MORE_INFO
 
 7. Nếu câu SQL có thể trả về rất nhiều dòng, hãy giới hạn tối đa 20 dòng bằng TOP.
