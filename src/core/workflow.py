@@ -268,5 +268,12 @@ class Workflow:
     async def build_workflow(self):
         self._checkpointer_cm = AsyncPostgresSaver.from_conn_string(DB_CHECKPOINT)
         self._checkpointer = await self._checkpointer_cm.__aenter__()
-        await self._checkpointer.setup()
+        # await self._checkpointer.setup()
+        # async with self._checkpointer.conn.cursor() as cur:
+        #     await cur.execute("SELECT pg_advisory_lock(999999);")
+
+        #     try:
+        #         await self._checkpointer.setup()
+        #     finally:
+        #         await cur.execute("SELECT pg_advisory_unlock(999999);")
         self._graph = self._build_graph()
