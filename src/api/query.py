@@ -19,7 +19,7 @@ router = APIRouter()
 @router.get("/query/v1")
 async def query(message: str, client_id: str, request: Request):
     async def generate():
-        if await client_exists(client_id):
+        if not await client_exists(client_id):
             yield f"data: {json.dumps({'type': 'step', 'response': "ERROR:Vui lòng tải lại trang!"}, ensure_ascii=False)}\n\n"
             return
         if not message.strip():
