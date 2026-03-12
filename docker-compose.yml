@@ -19,6 +19,23 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis_server
+    ports:
+      - "6379:6379"
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD}", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis_data:/data
+    networks:
+      - chat-db
+
   agent:
     build:
       context: .
@@ -27,6 +44,8 @@ services:
     restart: always
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     image: chatdb-agent:latest
     environment:
@@ -38,6 +57,7 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
 
 
 networks:
