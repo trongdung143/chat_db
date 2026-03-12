@@ -3,7 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from src.api import query, client
 from src.core.workflow import Workflow
+from src.services.redis_service import close_redis
 from contextlib import asynccontextmanager
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -11,8 +15,12 @@ async def lifespan(app: FastAPI):
     workflow = Workflow()
     await workflow.build_workflow()
     app.state.workflow = workflow
-
+    logger.info("Application startup complete")
     yield
+    # Cleanup on shutdown
+    logger.info("Shutting down application...")
+    await close_redis()
+    logger.info("Application shutdown complete")
 
 
 app = FastAPI(lifespan=lifespan)

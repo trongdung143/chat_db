@@ -1,10 +1,7 @@
 FROM python:3.12.12-slim
-
 WORKDIR /app
-
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ACCEPT_EULA=Y
-
 RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
@@ -13,25 +10,24 @@ RUN apt-get update && apt-get install -y \
     unixodbc \
     unixodbc-dev \
     && rm -rf /var/lib/apt/lists/*
-
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && curl https://packages.microsoft.com/config/debian/12/prod.list \
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+    | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod bookworm main" \
     > /etc/apt/sources.list.d/mssql-release.list
-
 RUN apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN sed -i 's/\[openssl_init\]/[openssl_init]\nssl_conf = ssl_sect/' /etc/ssl/openssl.cnf \
+    && echo "\n[ssl_sect]\nsystem_default = system_default_sect\n\n[system_default_sect]\nMinProtocol = TLSv1\nCipherString = DEFAULT@SECLEVEL=0\nOptions = UnsafeLegacyRenegotiation" \
+    >> /etc/ssl/openssl.cnf
 
 RUN pip install uv
-
 COPY requirements.txt .
 RUN uv pip install --system -r requirements.txt
 COPY . .
-
-# Make port configurable via environment variable
 ENV PORT=8080
+EXPOSE 8080
+# CMD uv run uvicorn src.main:app --host 0.0.0.0 --port $PORT
 
-# Expose the port
-EXPOSE $PORT
-
-# Use environment variable for port
-CMD uv run uvicorn src.main:app --host 0.0.0.0 --port $PORT
+CMD ["sh", "-c", "uv run migrate_checkpoint.py && uv run gunicorn src.main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:$PORT"]

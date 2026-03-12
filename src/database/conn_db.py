@@ -1,20 +1,21 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-import urllib
 from src.setup import DB_DRIVER, DB_SERVER, DB_DATABASE, DB_UID, DB_PWD
 
 
 class Database:
     def __init__(self):
-        params = urllib.parse.quote_plus(
-            "DRIVER=" + DB_DRIVER + ";"
-            "SERVER=" + DB_SERVER + ";"
-            "DATABASE=" + DB_DATABASE + ";"
-            "UID=" + DB_UID + ";"
-            "PWD=" + DB_PWD + ";"
+        connection_string = (
+            f"DRIVER={DB_DRIVER};"
+            f"SERVER={DB_SERVER};"
+            f"DATABASE={DB_DATABASE};"
+            f"UID={DB_UID};"
+            f"PWD={DB_PWD};"
+            "Encrypt=no;"
+            "TrustServerCertificate=yes;"
         )
 
         self.engine = create_async_engine(
-            f"mssql+aioodbc:///?odbc_connect={params}",
+            f"mssql+aioodbc:///?odbc_connect={connection_string}",
             pool_size=10,
             max_overflow=20,
             pool_timeout=30,

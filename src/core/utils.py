@@ -1,13 +1,18 @@
 import pandas as pd
+import numpy as np
 from decimal import Decimal
+from datetime import datetime, date
+import uuid
 import re
 import sqlparse
 
 
 def dataframe_to_json(df: pd.DataFrame, max_rows: int = 10):
 
-    if df.empty:
+    if df is None or df.empty:
         return []
+
+    df = df.copy()
 
     if df.columns.duplicated().any():
         counts = {}
@@ -25,13 +30,41 @@ def dataframe_to_json(df: pd.DataFrame, max_rows: int = 10):
 
     df = df.head(max_rows)
 
-    df = df.where(pd.notna(df), None)
+    df = df.astype(object)
 
     def convert_value(v):
+
+        # None
+        if v is None:
+            return None
+
+        # NaN / NaT
+        if pd.isna(v):
+            return None
+
+        # pandas timestamp
         if isinstance(v, pd.Timestamp):
             return v.strftime("%Y-%m-%d %H:%M:%S")
+
+        # python datetime
+        if isinstance(v, (datetime, date)):
+            return v.isoformat()
+
+        # Decimal
         if isinstance(v, Decimal):
             return float(v)
+
+        # numpy numbers
+        if isinstance(v, (np.integer,)):
+            return int(v)
+
+        if isinstance(v, (np.floating,)):
+            return float(v)
+
+        # UUID
+        if isinstance(v, uuid.UUID):
+            return str(v)
+
         return v
 
     df = df.apply(lambda col: col.map(convert_value))

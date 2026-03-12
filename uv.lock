@@ -314,6 +314,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "aioodbc" },
     { name = "fastapi" },
+    { name = "gunicorn" },
     { name = "huggingface-hub", extra = ["hf-xet"] },
     { name = "langchain" },
     { name = "langchain-community" },
@@ -327,6 +328,7 @@ dependencies = [
     { name = "psycopg", extra = ["binary", "pool"] },
     { name = "pyodbc" },
     { name = "python-dotenv" },
+    { name = "redis" },
     { name = "sqlalchemy" },
     { name = "sqlparse" },
     { name = "uvicorn", extra = ["standard"] },
@@ -336,6 +338,7 @@ dependencies = [
 requires-dist = [
     { name = "aioodbc", specifier = ">=0.5.0" },
     { name = "fastapi", specifier = ">=0.135.1" },
+    { name = "gunicorn", specifier = ">=25.1.0" },
     { name = "huggingface-hub", extras = ["hf-xet"], specifier = ">=1.6.0" },
     { name = "langchain", specifier = ">=1.2.10" },
     { name = "langchain-community", specifier = ">=0.4.1" },
@@ -349,6 +352,7 @@ requires-dist = [
     { name = "psycopg", extras = ["binary", "pool"], specifier = ">=3.3.3" },
     { name = "pyodbc", specifier = ">=5.3.0" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
+    { name = "redis", specifier = ">=7.3.0" },
     { name = "sqlalchemy", specifier = ">=2.0.48" },
     { name = "sqlparse", specifier = ">=0.5.5" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.41.0" },
@@ -800,6 +804,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/fb/f4/5978b0f91611a64371424c109dd0027b247e5b39260abad2eaee66b6aa37/grpcio_tools-1.78.0-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:05803a5cdafe77c8bdf36aa660ad7a6a1d9e49bc59ce45c1bade2a4698826599", size = 3324724, upload-time = "2026-02-06T09:59:24.402Z" },
     { url = "https://files.pythonhosted.org/packages/b2/80/96a324dba99cfbd20e291baf0b0ae719dbb62b76178c5ce6c788e7331cb1/grpcio_tools-1.78.0-cp314-cp314-win32.whl", hash = "sha256:f7c722e9ce6f11149ac5bddd5056e70aaccfd8168e74e9d34d8b8b588c3f5c7c", size = 1015505, upload-time = "2026-02-06T09:59:26.3Z" },
     { url = "https://files.pythonhosted.org/packages/3b/d1/909e6a05bfd44d46327dc4b8a78beb2bae4fb245ffab2772e350081aaf7e/grpcio_tools-1.78.0-cp314-cp314-win_amd64.whl", hash = "sha256:7d58ade518b546120ec8f0a8e006fc8076ae5df151250ebd7e82e9b5e152c229", size = 1190196, upload-time = "2026-02-06T09:59:28.359Z" },
+]
+
+[[package]]
+name = "gunicorn"
+version = "25.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/66/13/ef67f59f6a7896fdc2c1d62b5665c5219d6b0a9a1784938eb9a28e55e128/gunicorn-25.1.0.tar.gz", hash = "sha256:1426611d959fa77e7de89f8c0f32eed6aa03ee735f98c01efba3e281b1c47616", size = 594377, upload-time = "2026-02-13T11:09:58.989Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/da/73/4ad5b1f6a2e21cf1e85afdaad2b7b1a933985e2f5d679147a1953aaa192c/gunicorn-25.1.0-py3-none-any.whl", hash = "sha256:d0b1236ccf27f72cfe14bce7caadf467186f19e865094ca84221424e839b8b8b", size = 197067, upload-time = "2026-02-13T11:09:57.146Z" },
 ]
 
 [[package]]
@@ -2258,6 +2274,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/da/92/1446574745d74df0c92e6aa4a7b0b3130706a4142b2d1a5869f2eaa423c6/pyyaml-6.0.3-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:16249ee61e95f858e83976573de0f5b2893b3677ba71c9dd36b9cf8be9ac6d65", size = 829923, upload-time = "2025-09-25T21:32:54.537Z" },
     { url = "https://files.pythonhosted.org/packages/f0/7a/1c7270340330e575b92f397352af856a8c06f230aa3e76f86b39d01b416a/pyyaml-6.0.3-cp314-cp314t-win_amd64.whl", hash = "sha256:4ad1906908f2f5ae4e5a8ddfce73c320c2a1429ec52eafd27138b7f1cbe341c9", size = 174062, upload-time = "2025-09-25T21:32:55.767Z" },
     { url = "https://files.pythonhosted.org/packages/f1/12/de94a39c2ef588c7e6455cfbe7343d3b2dc9d6b6b2f40c4c6565744c873d/pyyaml-6.0.3-cp314-cp314t-win_arm64.whl", hash = "sha256:ebc55a14a21cb14062aa4162f906cd962b28e2e9ea38f9b4391244cd8de4ae0b", size = 149341, upload-time = "2025-09-25T21:32:56.828Z" },
+]
+
+[[package]]
+name = "redis"
+version = "7.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/da/82/4d1a5279f6c1251d3d2a603a798a1137c657de9b12cfc1fba4858232c4d2/redis-7.3.0.tar.gz", hash = "sha256:4d1b768aafcf41b01022410b3cc4f15a07d9b3d6fe0c66fc967da2c88e551034", size = 4928081, upload-time = "2026-03-06T18:18:16.287Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f0/28/84e57fce7819e81ec5aa1bd31c42b89607241f4fb1a3ea5b0d2dbeaea26c/redis-7.3.0-py3-none-any.whl", hash = "sha256:9d4fcb002a12a5e3c3fbe005d59c48a2cc231f87fbb2f6b70c2d89bb64fec364", size = 404379, upload-time = "2026-03-06T18:18:14.583Z" },
 ]
 
 [[package]]

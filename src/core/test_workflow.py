@@ -40,9 +40,9 @@ class Workflow:
             "sql_fix",
             "__end__",
         ]
-        self._graph = None
         self._tools_01 = ToolNode(tools)
         self._tools_02 = ToolNode(tools)
+        self._graph = self._build_graph()
 
     def _route(self, state: State) -> str:
         next_node = state.get("next_node")
@@ -84,7 +84,7 @@ class Workflow:
         question = state.get("question")
         messages = state.get("messages")
 
-        new_question = "Câu hỏi: " + question + "\nBổ sung câu hỏi: " + detail
+        new_question = question + "\nBổ sung câu hỏi: " + detail
         messages[-1].content = new_question
 
         state.update(question=new_question, messages=messages)
@@ -139,7 +139,7 @@ class Workflow:
             chain = assistant_prompt | assistant_model.bind_tools(tools)
             response = await chain.ainvoke(
                 {
-                    "data_provided": state.get("list_data")[-1]["data"],
+                    "data_provided": state.get("list_data")[-1].get("data"),
                     "question": state.get("question"),
                     "messages": state.get("messages"),
                 }
@@ -256,24 +256,7 @@ class Workflow:
         )
         graph.add_edge("tools_02", "data_to_answer")
         # graph.add_edge("solution_plan", "__end__")
-        return graph.compile(checkpointer=self._checkpointer)
+        return graph.compile()  # checkpointer=self._checkpointer)
 
     def get_graph(self):
         return self._graph
-
-    def get_checkpointer(self):
-        if self._checkpointer:
-            return self._checkpointer
-
-    async def build_workflow(self):
-        self._checkpointer_cm = AsyncPostgresSaver.from_conn_string(DB_CHECKPOINT)
-        self._checkpointer = await self._checkpointer_cm.__aenter__()
-        # await self._checkpointer.setup()
-        # async with self._checkpointer.conn.cursor() as cur:
-        #     await cur.execute("SELECT pg_advisory_lock(999999);")
-
-        #     try:
-        #         await self._checkpointer.setup()
-        #     finally:
-        #         await cur.execute("SELECT pg_advisory_unlock(999999);")
-        self._graph = self._build_graph()

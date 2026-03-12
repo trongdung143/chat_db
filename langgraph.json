@@ -4,7 +4,7 @@
         "."
     ],
     "graphs": {
-        "main_graph": "./main.py:graph"
+        "main_graph": "./test.py:graph"
     },
     "env": ".env",
     "image_distro": "wolfi"
