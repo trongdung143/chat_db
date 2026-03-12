@@ -16,3 +16,4 @@ sqlalchemy
 sqlparse
 langgraph-checkpoint-postgres
 psycopg[binary,pool]
+gunicorn 

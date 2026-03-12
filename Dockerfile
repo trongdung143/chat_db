@@ -28,4 +28,5 @@ RUN uv pip install --system -r requirements.txt
 COPY . .
 ENV PORT=8080
 EXPOSE 8080
-CMD uv run uvicorn src.main:app --host 0.0.0.0 --port $PORT
+# CMD uv run uvicorn src.main:app --host 0.0.0.0 --port $PORT
+CMD uv run gunicorn src.main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:$PORT

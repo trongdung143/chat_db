@@ -16,19 +16,28 @@ def get_time(runtime: ToolRuntime) -> str:
 @tool
 async def get_business_rules(topic: str, runtime: ToolRuntime) -> str:
     """
-    Lấy thông tin quy tắc nghiệp vụ của hệ thống.
+    Lấy thông tin quy tắc nghiệp vụ của hệ thống chương trình thẻ thành viên.
 
-    Sử dụng tool này khi câu hỏi cần tham chiếu đến quy định nghiệp vụ,
-    ví dụ:
+    Tool này dùng để tra cứu các quy định nghiệp vụ liên quan đến:
+    - Điều kiện nâng hạng thẻ (SEA, SKY, SUN)
+    - Điều kiện duy trì hạng thẻ
+    - Quy tắc hạ hạng thẻ
+    - Quy định về tài khoản tích lũy
+    - Quy định về tour trọn gói
+    - Các điều kiện xét hạng dựa trên giá trị giao dịch hoặc số lần sử dụng tour
+
+    Sử dụng tool này khi câu hỏi liên quan đến quy định hoặc lý do nghiệp vụ, ví dụ:
     - Tại sao khách hàng chưa được nâng hạng thẻ?
     - Điều kiện để đạt hạng SKY hoặc SUN là gì?
     - Khi nào khách hàng bị hạ hạng thẻ?
+    - Điều kiện duy trì hạng SKY là gì?
+    - Khách hàng cần bao nhiêu giá trị giao dịch để lên hạng SUN?
 
     Args:
-        topic: Chủ đề nghiệp vụ cần tra cứu.
+        topic: Chủ đề nghiệp vụ cần tra cứu (ví dụ: "điều kiện nâng hạng SKY", "hạ hạng SUN").
 
     Returns:
-        Nội dung quy tắc nghiệp vụ để dùng cho việc phân tích và trả lời.
+        Nội dung quy tắc nghiệp vụ liên quan đến chủ đề để phục vụ phân tích và trả lời.
     """
     writer = runtime.stream_writer
     writer("INFO:Đang truy vấn nghiệp vụ ...")

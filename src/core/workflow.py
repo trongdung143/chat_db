@@ -84,7 +84,7 @@ class Workflow:
         question = state.get("question")
         messages = state.get("messages")
 
-        new_question = question + "\nBổ sung câu hỏi: " + detail
+        new_question = "Câu hỏi: " + question + "\nBổ sung câu hỏi: " + detail
         messages[-1].content = new_question
 
         state.update(question=new_question, messages=messages)
