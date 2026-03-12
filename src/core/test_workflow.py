@@ -99,7 +99,7 @@ class Workflow:
             df = await self._sql_service.execute(sql)
             data = dataframe_to_json(df)
             list_data = state.get("list_data", [])
-            list_data.append((state.get("question"), data))
+            list_data.append({"question": state.get("question"), "data": data})
             state.update(list_data=list_data, next_node="data_to_answer")
         except Exception as e:
             stream_writer("ERROR:Lỗi khi lấy dữ liệu!")
@@ -139,7 +139,7 @@ class Workflow:
             chain = assistant_prompt | assistant_model.bind_tools(tools)
             response = await chain.ainvoke(
                 {
-                    "data_provided": state.get("list_data")[-1][1],
+                    "data_provided": state.get("list_data")[-1].get("data"),
                     "question": state.get("question"),
                     "messages": state.get("messages"),
                 }

@@ -6,7 +6,7 @@ class State(AgentState):
     question_detail: str = ""
     sql: str = ""
     sql_error_msg: str = ""
-    list_data: list[tuple[str, str]] = []
+    list_data: list[dict] = []
     answer: str = ""
     next_node: str = ""
     sql_fix_count: int = 0

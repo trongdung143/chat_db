@@ -41,7 +41,10 @@ NEED_MORE_INFO
 8. Kết quả truy vấn luôn phải bao gồm ít nhất một cột định danh duy nhất của mỗi bản ghi
 để có thể phân biệt dữ liệu.
 
-9. Phải có đủ thông tin thì mới tạo câu SQL.
+6. Không được sử dụng toán tử LIKE trong câu SQL.
+
+10. Phải có đủ thông tin thì mới tạo câu SQL.
+
             """,
         ),
         ("human", "{messages}"),
