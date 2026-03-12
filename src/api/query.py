@@ -6,6 +6,7 @@ import json
 from langchain_core.messages import HumanMessage, AIMessageChunk
 import asyncio
 from langgraph.graph.state import CompiledStateGraph
+from src.services.redis_service import client_exists
 
 
 class SQLRequest(BaseModel):
@@ -18,8 +19,7 @@ router = APIRouter()
 @router.get("/query/v1")
 async def query(message: str, client_id: str, request: Request):
     async def generate():
-        clients = request.app.state.clients
-        if client_id not in clients:
+        if await client_exists(client_id):
             yield f"data: {json.dumps({'type': 'step', 'response': "ERROR:Vui lòng tải lại trang!"}, ensure_ascii=False)}\n\n"
             return
         if not message.strip():
