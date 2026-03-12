@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+      - name: Add server to known_hosts
+        run: |
+          ssh-keyscan -p 2224 chatdb-uat.officeai.vn >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -p 2224 truong@chatdb-uat.officeai.vn << 'EOF'
+            cd chat_db
+            git pull origin main
+            docker compose down
+            docker compose up -d --build
+          EOF
