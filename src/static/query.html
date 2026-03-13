@@ -449,10 +449,9 @@
 
 <body>
     <div class="chat-container" id="chatContainer" style="display: none;">
-        <div style="display:flex;align-items:center;gap:10px;">
-            <img src="https://files.smartsuppcdn.com/files/agents/avatars/514640-l-F4bskcrq.jpg?size=80"
-                alt="Agent avatar" data-testid="avatarAgent" class="rounded-full w-11 h-11">
+        <div class="chat-header">
             <span>SAIGONTOURIST</span>
+            <button class="header-close-btn" id="headerCloseBtn">✕</button>
         </div>
         <div id="chat-box"></div>
         <div class="input-container">
@@ -521,7 +520,7 @@
             const empty = document.createElement('div');
             empty.classList.add('empty-state');
             empty.innerHTML = `
-                <h3>ChatBot</h3>
+                <h3>Chatbot</h3>
                 <p>Hỗ trợ chăm sóc khách hàng</p>
             `;
             chatBox.appendChild(empty);
