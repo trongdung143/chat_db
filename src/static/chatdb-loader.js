@@ -1,39 +1,60 @@
 (function () {
 
+    // tránh load widget nhiều lần
     if (window.chatdbWidgetLoaded) return;
     window.chatdbWidgetLoaded = true;
 
     function initChatWidget() {
 
-        const scriptSrc =
-            document.currentScript?.src ||
-            [...document.getElementsByTagName("script")]
-                .map(s => s.src)
-                .find(src => src.includes("chat.js"));
+        // tìm script đang chạy
+        const scriptElement =
+            document.currentScript ||
+            [...document.scripts].find(s => s.src && s.src.includes("chatdb-loader"));
 
-        const queryUrl = new URL("/static/query.html", scriptSrc).href;
+        if (!scriptElement) {
+            console.error("ChatDB: cannot detect loader script");
+            return;
+        }
 
-        // Generate or get client ID
+        const scriptSrc = scriptElement.src;
+
+        // domain của server widget
+        const baseUrl = new URL(scriptSrc).origin;
+
+        // url iframe chat
+        const queryUrl = new URL("/static/query.html", baseUrl).href;
+
+        // ===== client id =====
         function getOrGenerateClientId() {
-            const storageKey = 'chatdb_client_id';
+            const storageKey = "chatdb_client_id";
             let clientId = localStorage.getItem(storageKey);
+
             if (!clientId) {
-                clientId = 'client_' + crypto.randomUUID();
+                clientId = "client_" + crypto.randomUUID();
                 localStorage.setItem(storageKey, clientId);
             }
+
             return clientId;
         }
 
         const clientId = getOrGenerateClientId();
-        const queryUrlWithClientId = queryUrl + '?client_id=' + encodeURIComponent(clientId);
 
-        // Gọi API /clear để xóa session
+        const iframeUrl =
+            queryUrl + "?client_id=" + encodeURIComponent(clientId);
+
+        // ===== clear session =====
         function clearSession() {
-            const clearUrl = baseUrl + "/clear?client_id=" + encodeURIComponent(clientId);
-            // dùng sendBeacon để đảm bảo gọi được khi reload/close tab
-            navigator.sendBeacon(clearUrl);
+            const clearUrl =
+                baseUrl + "/clear?client_id=" + encodeURIComponent(clientId);
+
+            try {
+                navigator.sendBeacon(clearUrl);
+            } catch (e) {
+                fetch(clearUrl).catch(() => { });
+            }
         }
 
+        // ===== chat button =====
         const button = document.createElement("div");
         button.innerHTML = "💬";
 
@@ -57,6 +78,7 @@
 
         document.body.appendChild(button);
 
+        // ===== chat box =====
         const box = document.createElement("div");
 
         Object.assign(box.style, {
@@ -73,9 +95,10 @@
             zIndex: "999999"
         });
 
+        // ===== iframe =====
         const iframe = document.createElement("iframe");
 
-        iframe.src = queryUrlWithClientId;
+        iframe.src = iframeUrl;
         iframe.style.width = "100%";
         iframe.style.height = "100%";
         iframe.style.border = "none";
@@ -83,24 +106,38 @@
         box.appendChild(iframe);
         document.body.appendChild(box);
 
+        // ===== toggle widget =====
         button.onclick = () => {
-            box.style.display = box.style.display === "none" ? "block" : "none";
+            box.style.display =
+                box.style.display === "none" ? "block" : "none";
         };
 
-        // Listen for messages from iframe
-        window.addEventListener('message', (event) => {
-            if (event.data && event.data.action === 'closeWidget') {
-                box.style.display = 'none';
-                clearSession(); // gọi /clear khi nhấn nút đóng trong iframe
+        // ===== listen message từ iframe =====
+        window.addEventListener("message", (event) => {
+
+            if (!event.data) return;
+
+            if (event.data.action === "closeWidget") {
+                box.style.display = "none";
+                clearSession();
             }
+
         });
 
-        // Gọi /clear khi user reload hoặc đóng tab
-        window.addEventListener('beforeunload', () => {
+        // ===== clear khi reload / close =====
+        window.addEventListener("beforeunload", () => {
             clearSession();
         });
+
+        // debug
+        console.log("ChatDB widget loaded");
+        console.log("script:", scriptSrc);
+        console.log("iframe:", iframeUrl);
+        console.log("api:", baseUrl);
+
     }
 
+    // đảm bảo DOM đã sẵn sàng
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", initChatWidget);
     } else {
