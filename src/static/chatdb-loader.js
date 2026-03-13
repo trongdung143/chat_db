@@ -152,10 +152,14 @@
 
                 // Tạo client_id mới để lần mở tiếp là session sạch
                 const newId = "client_" + crypto.randomUUID();
-                localStorage.setItem("chatdb_client_id", newId);
                 clientId = newId;
 
-                await registerClient(newId);
+                // Chỉ update localStorage sau khi iframe mới đã load
+                iframe.onload = () => {
+                    localStorage.setItem("chatdb_client_id", newId);
+                    iframe.onload = null;
+                };
+
                 iframe.src = buildIframeUrl(newId);
             }
 
