@@ -80,7 +80,7 @@
         // ===== inject Google Font =====
         const fontLink = document.createElement("link");
         fontLink.rel = "stylesheet";
-        fontLink.href = "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap";
+        fontLink.href = "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap";
         document.head.appendChild(fontLink);
 
         // ===== inject CSS =====
@@ -102,7 +102,7 @@
                 box-shadow: 0 6px 24px rgba(37,99,235,0.45), 0 2px 8px rgba(0,0,0,0.12);
                 z-index: 999999;
                 transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s ease;
-                font-family: 'Sora', sans-serif;
+                font-family: 'Roboto', sans-serif;
             }
             #chatdb-widget-btn:hover {
                 transform: scale(1.1) translateY(-2px);
@@ -115,7 +115,7 @@
                 transition: transform 0.3s ease;
             }
             #chatdb-widget-btn.open img {
-                transform: rotate(90deg) scale(0.85);
+                transform: scale(0.85);
             }
 
             #chatdb-greet-bubble {
@@ -125,7 +125,7 @@
                 background: white;
                 border-radius: 14px 14px 4px 14px;
                 padding: 9px 15px;
-                font-family: 'Sora', sans-serif;
+                font-family: 'Roboto', sans-serif;
                 font-size: 12.5px;
                 font-weight: 500;
                 color: #0f172a;
@@ -151,7 +151,7 @@
                 position: fixed;
                 bottom: 94px;
                 right: 24px;
-                width: 390px;
+                width: 440px;
                 height: 590px;
                 border-radius: 20px;
                 overflow: hidden;
@@ -164,7 +164,7 @@
                 display: none;
                 transform-origin: bottom right;
                 animation: chatdb-open 0.3s cubic-bezier(.34,1.3,.64,1) both;
-                font-family: 'Sora', sans-serif;
+                font-family: 'Roboto', sans-serif;
             }
             #chatdb-box.visible {
                 display: block;
@@ -299,23 +299,44 @@
         window.addEventListener("message", async (event) => {
             if (!event.data) return;
 
+            // Nút thu nhỏ: chỉ đóng widget, GIỮ NGUYÊN session
+            if (event.data.action === "minimizeWidget") {
+                box.classList.remove("visible");
+                button.classList.remove("open");
+                isOpen = false;
+                greetBubble.style.display = "";
+                startGreet(1500);
+            }
+
+            // Nút Chat mới: clear session + tạo client_id mới, GIỮ NGUYÊN box mở
+            if (event.data.action === "newChat") {
+                clearSession(clientId);
+
+                const newId = "client_" + crypto.randomUUID();
+                clientId = newId;
+
+                iframe.onload = () => {
+                    localStorage.setItem("chatdb_client_id", newId);
+                    iframe.onload = null;
+                };
+
+                iframe.src = buildIframeUrl(newId);
+            }
+
+            // closeWidget (legacy / fallback)
             if (event.data.action === "closeWidget") {
                 box.classList.remove("visible");
                 button.classList.remove("open");
                 isOpen = false;
 
-                // Khởi động lại loop greeting
                 greetBubble.style.display = "";
                 startGreet(1500);
 
-                // Clear session cũ
                 clearSession(clientId);
 
-                // Tạo client_id mới để lần mở tiếp là session sạch
                 const newId = "client_" + crypto.randomUUID();
                 clientId = newId;
 
-                // Chỉ update localStorage sau khi iframe mới đã load
                 iframe.onload = () => {
                     localStorage.setItem("chatdb_client_id", newId);
                     iframe.onload = null;
