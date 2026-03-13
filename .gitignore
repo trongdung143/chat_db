@@ -10,3 +10,4 @@ wheels/
 .venv
 .env
 notebook/
+static/index.html

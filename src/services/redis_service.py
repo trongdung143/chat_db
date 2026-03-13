@@ -2,11 +2,11 @@ import logging
 import redis.asyncio as aioredis
 from redis.asyncio import Redis
 from redis.exceptions import RedisError, ConnectionError
-from src.setup import REDIS_PASSWORD
+from src.setup import REDIS_PASSWORD, REDIS_HOST
 
 logger = logging.getLogger(__name__)
 redis_client = aioredis.from_url(
-    f"redis://:{REDIS_PASSWORD}@redis:6379",  # phải sửa cái này trước khi deploy
+    f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:6379",  # phải sửa cái này trước khi deploy
     password=REDIS_PASSWORD,
     decode_responses=True,
     socket_connect_timeout=5,

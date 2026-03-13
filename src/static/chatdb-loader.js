@@ -5,7 +5,11 @@
 
     function initChatWidget() {
 
-        const queryUrl = "/static/query.html";
+        const currentScript = document.currentScript;
+        const scriptSrc = currentScript ? currentScript.src : '';
+        const baseUrl = scriptSrc ? new URL(scriptSrc).origin : window.location.origin;
+
+        const queryUrl = baseUrl + "/static/query.html";
 
         // Generate or get client ID
         function getOrGenerateClientId() {
@@ -20,6 +24,13 @@
 
         const clientId = getOrGenerateClientId();
         const queryUrlWithClientId = queryUrl + '?client_id=' + encodeURIComponent(clientId);
+
+        // Gọi API /clear để xóa session
+        function clearSession() {
+            const clearUrl = baseUrl + "/clear?client_id=" + encodeURIComponent(clientId);
+            // dùng sendBeacon để đảm bảo gọi được khi reload/close tab
+            navigator.sendBeacon(clearUrl);
+        }
 
         const button = document.createElement("div");
         button.innerHTML = "💬";
@@ -78,7 +89,13 @@
         window.addEventListener('message', (event) => {
             if (event.data && event.data.action === 'closeWidget') {
                 box.style.display = 'none';
+                clearSession(); // gọi /clear khi nhấn nút đóng trong iframe
             }
+        });
+
+        // Gọi /clear khi user reload hoặc đóng tab
+        window.addEventListener('beforeunload', () => {
+            clearSession();
         });
     }
 
