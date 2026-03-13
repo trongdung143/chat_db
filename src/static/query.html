@@ -599,17 +599,36 @@
             return params.get('client_id');
         }
 
+        // Register client with backend
+        async function registerClient(clientId) {
+            try {
+                const res = await fetch('/client/v1/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ client_id: clientId })
+                });
+                const data = await res.json();
+                console.log('Client registered:', clientId, data);
+                return data.success || data.message?.includes('đã tồn tại');
+            } catch (error) {
+                console.error('Error registering client:', error);
+                return false;
+            }
+        }
+
         async function loadClientId() {
             let clientId = getClientIdFromUrl() || localStorage.getItem('chatdb_client_id');
 
+            // Auto-generate if not exists
             if (!clientId) {
-                // Show modal - wait for user to submit
-                clientModal.classList.add('active');
-                clientInput.focus();
-                return;
+                clientId = generateClientId();
+                localStorage.setItem('chatdb_client_id', clientId);
             }
 
-            // Already have client ID, auto login
+            // Register client with backend
+            await registerClient(clientId);
+
+            // Auto login - no modal
             currentClientId = clientId;
             clientModal.classList.remove('active');
             chatContainer.style.display = 'flex';
@@ -641,15 +660,10 @@
                 }
 
                 // Register new client
-                const regRes = await fetch('/client/v1/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ client_id: clientId })
-                });
-                const regData = await regRes.json();
+                const success = await registerClient(clientId);
 
-                if (!regData.success) {
-                    errorText.textContent = regData.message;
+                if (!success) {
+                    errorText.textContent = 'Lỗi đăng ký client';
                     submitClientBtn.disabled = false;
                     return;
                 }
