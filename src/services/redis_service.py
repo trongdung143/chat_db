@@ -6,7 +6,7 @@ from src.setup import REDIS_PASSWORD
 
 logger = logging.getLogger(__name__)
 redis_client = aioredis.from_url(
-    f"redis://:{REDIS_PASSWORD}@192.168.1.107:6379",  # phải sửa cái này trước khi deploy
+    f"redis://:{REDIS_PASSWORD}@redis:6379",  # phải sửa cái này trước khi deploy
     password=REDIS_PASSWORD,
     decode_responses=True,
     socket_connect_timeout=5,
