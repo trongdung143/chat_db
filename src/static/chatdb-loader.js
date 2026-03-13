@@ -5,11 +5,13 @@
 
     function initChatWidget() {
 
-        const currentScript = document.currentScript;
-        const scriptSrc = currentScript ? currentScript.src : '';
-        const baseUrl = scriptSrc ? new URL(scriptSrc).origin : window.location.origin;
+        const scriptSrc =
+            document.currentScript?.src ||
+            [...document.getElementsByTagName("script")]
+                .map(s => s.src)
+                .find(src => src.includes("chat.js"));
 
-        const queryUrl = baseUrl + "/static/query.html";
+        const queryUrl = new URL("/static/query.html", scriptSrc).href;
 
         // Generate or get client ID
         function getOrGenerateClientId() {
