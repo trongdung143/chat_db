@@ -1,6 +1,9 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+import os
+
 from src.api import query, client
 from src.core.workflow import Workflow
 from src.services.redis_service import close_redis
@@ -28,13 +31,16 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "http://127.0.0.1:8080"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["Set-Cookie"],
 )
 
+BASE_DIR = os.path.dirname(__file__)
+STATIC_DIR = os.path.abspath(os.path.join(BASE_DIR, "static"))
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 BLOCKED_KEYWORDS = ["wget", "chmod", "rm", ";", "curl", "tftp", "ftpget"]
 
 

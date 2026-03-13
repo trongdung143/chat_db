@@ -55,7 +55,7 @@ class Workflow:
     @traceable
     async def _question_to_sql(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Đang tạo truy vấn ...")
+        stream_writer("INFO:Tạo truy vấn ...")
 
         try:
             chain = sql_prompt | sql_model
@@ -92,7 +92,7 @@ class Workflow:
 
     async def _sql_to_data(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Đang lấy dữ liệu ...")
+        stream_writer("INFO:Lấy dữ liệu ...")
 
         try:
             sql = state.get("sql")
@@ -116,7 +116,7 @@ class Workflow:
 
     async def _sql_fix(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Đang sửa câu truy vấn ...")
+        stream_writer("INFO:Sửa câu truy vấn ...")
 
         try:
             state.update(sql_fix_count=state.get("sql_fix_count") + 1)
@@ -139,7 +139,7 @@ class Workflow:
 
     async def _data_to_answer(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Đang tạo câu trả lời ...")
+        stream_writer("INFO:Tạo câu trả lời ...")
 
         try:
 
@@ -170,7 +170,7 @@ class Workflow:
 
     async def _simple_question(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Đang tạo câu trả lời ...")
+        stream_writer("INFO:Tạo câu trả lời ...")
         try:
 
             chain = assistant_no_data_prompt | assistant_model.bind_tools(tools)
@@ -192,7 +192,7 @@ class Workflow:
 
     async def _solution_plan(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Đang đề xuất hướng giải quyết ...")
+        stream_writer("INFO:đề xuất hướng giải quyết ...")
 
         try:
             pass

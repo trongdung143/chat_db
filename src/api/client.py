@@ -29,7 +29,7 @@ STATIC_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "static"))
 
 @router.get("/", response_class=HTMLResponse)
 async def get_chat_page():
-    html_path = os.path.join(STATIC_DIR, "query.html")
+    html_path = os.path.join(STATIC_DIR, "index.html")
     if not os.path.exists(html_path):
         return HTMLResponse("<h3>Chat page not found.</h3>", status_code=404)
 

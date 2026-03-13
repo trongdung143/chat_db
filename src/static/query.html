@@ -18,33 +18,55 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: white;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
 
         .chat-container {
             width: 100%;
-            max-width: 900px;
-            height: 90vh;
+            height: 100%;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 0;
+            box-shadow: none;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
             color: white;
             padding: 20px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 1.5em;
             font-weight: 600;
+        }
+
+        .header-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+
+        .header-close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         #chat-box {
@@ -93,7 +115,7 @@
         }
 
         .message.user {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
             color: white;
             margin-left: auto;
             border-bottom-right-radius: 4px;
@@ -114,7 +136,7 @@
             width: 8px;
             height: 8px;
             margin-left: 6px;
-            border: 2px solid #667eea;
+            border: 2px solid #00bcd4;
             border-top-color: transparent;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -220,12 +242,12 @@
         }
 
         #message-input:focus {
-            border-color: #667eea;
+            border-color: #00bcd4;
         }
 
         #send-btn {
             padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
             color: white;
             border: none;
             border-radius: 25px;
@@ -237,7 +259,7 @@
 
         #send-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
         }
 
         #send-btn:disabled {
@@ -333,7 +355,7 @@
         .modal-btn-primary {
             width: 100%;
             padding: 12px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -345,7 +367,7 @@
 
         .modal-btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
         }
 
         .modal-btn-primary:disabled {
@@ -370,12 +392,156 @@
                 transform: rotate(360deg);
             }
         }
+
+        .status-line {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: #e3f2fd;
+            border-left: 3px solid #2196F3;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #1976D2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 24px;
+        }
+
+        .status-line.done {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .done-summary {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #2e7d32;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 24px;
+        }
+
+        .done-text {
+            flex: 1;
+        }
+
+        .status-line.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+            color: #c62828;
+        }
+
+        .status-line.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+            color: #e65100;
+        }
+
+        .status-line.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .toggle-steps-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85em;
+            padding: 2px 6px;
+            margin-left: 8px;
+            color: inherit;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .toggle-steps-btn:hover {
+            opacity: 1;
+        }
+
+        .steps-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, margin-bottom 0.3s ease;
+        }
+
+        .steps-container.expanded {
+            max-height: 500px;
+            margin-bottom: 8px;
+        }
+
+        .step-item {
+            margin-bottom: 6px;
+            padding: 6px 10px;
+            background: #f5f5f5;
+            border-left: 2px solid #2196F3;
+            font-size: 0.85em;
+            color: #666;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            background: #2196F3;
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 0.8em;
+            flex-shrink: 0;
+        }
+
+        .step-item.error .step-number {
+            background: #f44336;
+        }
+
+        .step-item.warning .step-number {
+            background: #ff9800;
+        }
+
+        .step-item.success .step-number {
+            background: #4caf50;
+        }
+
+        .step-item.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+            color: #c62828;
+        }
+
+        .step-item.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+            color: #e65100;
+        }
+
+        .step-item.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+            color: #2e7d32;
+        }
     </style>
 </head>
 
 <body>
     <!-- Client ID Modal -->
-    <div id="clientModal" class="modal-overlay active">
+    <div id="clientModal" class="modal-overlay">
         <div class="modal-content">
             <h2>👋 Chào mừng</h2>
             <p>Nhập Client ID để bắt đầu</p>
@@ -387,8 +553,8 @@
 
     <div class="chat-container" id="chatContainer" style="display: none;">
         <div class="chat-header">
-            Chat DB
-            <div style="font-size: 0.7em; margin-top: 5px;">ID: <span id="headerId"></span></div>
+            <span>Chat DB</span>
+            <button class="header-close-btn" id="headerCloseBtn">✕</button>
         </div>
         <div id="chat-box"></div>
         <div class="input-container">
@@ -406,28 +572,49 @@
         const submitClientBtn = document.getElementById('submitClientBtn');
         const errorText = document.getElementById('errorText');
         const chatContainer = document.getElementById('chatContainer');
-        const headerId = document.getElementById('headerId');
+        const headerCloseBtn = document.getElementById('headerCloseBtn');
 
         let currentClientId = null;
         let currentEventSource = null;
 
-        // Clear client on page load
-        function loadClientId() {
-            // Get saved ID before removing
-            const savedId = localStorage.getItem('chatdb_client_id');
+        // Close button handler - notify parent to close widget
+        headerCloseBtn.addEventListener('click', () => {
+            if (window.parent !== window) {
+                window.parent.postMessage({ action: 'closeWidget' }, '*');
+            } else {
+                // If not in iframe, just hide the container
+                chatContainer.style.display = 'none';
+                clientModal.style.display = 'flex';
+            }
+        });
 
-            // Clear from server if exists
-            if (savedId) {
-                fetch(`/client/v1/clear?client_id=${encodeURIComponent(savedId)}`).catch(e => console.log(e));
+        // Clear client on page load
+        function generateClientId() {
+            return "client_" + crypto.randomUUID();
+        }
+
+        // Get client ID from URL parameter
+        function getClientIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('client_id');
+        }
+
+        async function loadClientId() {
+            let clientId = getClientIdFromUrl() || localStorage.getItem('chatdb_client_id');
+
+            if (!clientId) {
+                // Show modal - wait for user to submit
+                clientModal.classList.add('active');
+                clientInput.focus();
+                return;
             }
 
-            // Clear localStorage
-            localStorage.removeItem('chatdb_client_id');
-
-            // Show login modal
-            clientModal.classList.add('active');
-            chatContainer.style.display = 'none';
-            clientInput.focus();
+            // Already have client ID, auto login
+            currentClientId = clientId;
+            clientModal.classList.remove('active');
+            chatContainer.style.display = 'flex';
+            messageInput.focus();
+            initializeChat();
         }
 
         // Handle client ID submission
@@ -470,7 +657,6 @@
                 // Save and login
                 localStorage.setItem('chatdb_client_id', clientId);
                 currentClientId = clientId;
-                headerId.textContent = clientId;
 
                 clientModal.classList.remove('active');
                 chatContainer.style.display = 'flex';
@@ -540,6 +726,16 @@
             };
         }
 
+        function getColorForType(type) {
+            const colorMap = {
+                'error': '#f44336',
+                'warning': '#ff9800',
+                'success': '#4caf50',
+                'info': '#2196F3'
+            };
+            return colorMap[type] || '#2196F3';
+        }
+
         function clearEmpty() {
             const empty = chatBox.querySelector('.empty-state');
             if (empty) empty.remove();
@@ -562,7 +758,6 @@
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-
         function sendMessage() {
             const text = messageInput.value.trim();
             if (!text || !currentClientId) return;
@@ -576,11 +771,25 @@
             clearEmpty();
             chatBox.appendChild(botDiv);
 
+            // Status line
+            const statusLine = document.createElement('div');
+            statusLine.classList.add('status-line');
+            statusLine.innerHTML = `<span class="status-text">Đang xử lý...</span>`;
+            botDiv.appendChild(statusLine);
+
+            // Steps container
+            const stepsContainer = document.createElement('div');
+            stepsContainer.classList.add('steps-container');
+            botDiv.appendChild(stepsContainer);
+
+            // Content
             const contentDiv = document.createElement('div');
             contentDiv.classList.add('markdown-content');
             botDiv.appendChild(contentDiv);
 
             let accumulated = '';
+            let steps = [];
+            let toggleBtn = null;
             chatBox.scrollTop = chatBox.scrollHeight;
 
             // Send message with client_id
@@ -597,33 +806,52 @@
                         contentDiv.innerHTML = marked.parse(accumulated);
                         chatBox.scrollTop = chatBox.scrollHeight;
                     } else if (data.type === 'step') {
-                        const stepDiv = document.createElement('div');
                         const parsed = parseStatusMessage(data.response);
+                        const stepNumber = steps.length + 1;
 
-                        let bgColor = '#e3f2fd';
-                        let borderColor = '#2196F3';
-                        let textColor = '#1976D2';
+                        // Update status line
+                        statusLine.className = 'status-line ' + parsed.type;
 
-                        if (parsed.type === 'error') {
-                            bgColor = '#ffebee';
-                            borderColor = '#f44336';
-                            textColor = '#c62828';
-                        } else if (parsed.type === 'warning') {
-                            bgColor = '#fff3e0';
-                            borderColor = '#ff9800';
-                            textColor = '#e65100';
-                        } else if (parsed.type === 'success') {
-                            bgColor = '#e8f5e9';
-                            borderColor = '#4caf50';
-                            textColor = '#2e7d32';
+                        // Add toggle button only once
+                        if (steps.length === 0) {
+                            toggleBtn = createToggleBtn(stepsContainer);
+                            statusLine.appendChild(toggleBtn);
                         }
 
-                        stepDiv.style.cssText = `margin-bottom: 10px; padding: 8px 12px; background: ${bgColor}; border-left: 3px solid ${borderColor}; font-size: 0.9em; color: ${textColor}; border-radius: 4px;`;
-                        stepDiv.innerHTML = `<strong>${parsed.icon}</strong> ${parsed.text}`;
-                        botDiv.insertBefore(stepDiv, contentDiv);
+                        statusLine.querySelector('.status-text').innerHTML = `<span style="display: inline-flex; align-items: center; gap: 6px;"><strong style="background: ${getColorForType(parsed.type)}; color: white; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8em;">${stepNumber}</strong>${parsed.text}</span>`;
+
+                        // Add to steps list
+                        steps.push({ parsed, html: `${parsed.text}` });
+
+                        // Update steps container
+                        const stepItem = document.createElement('div');
+                        stepItem.classList.add('step-item', parsed.type);
+                        const cleanText = parsed.text.replace(/\.\.\.$/, '');
+                        stepItem.innerHTML = `<span class="step-number">${stepNumber}</span><span>${cleanText}</span>`;
+                        stepsContainer.appendChild(stepItem);
+
                         chatBox.scrollTop = chatBox.scrollHeight;
                     } else if (data.type === 'status') {
                         botDiv.classList.remove('streaming');
+
+                        // Hide status line
+                        statusLine.style.display = 'none';
+
+                        // Create done summary
+                        const doneSummary = document.createElement('div');
+                        doneSummary.classList.add('done-summary');
+
+                        const totalSteps = steps.length;
+                        doneSummary.innerHTML = `<span class="done-text">Hoàn thành</span>`;
+
+                        if (toggleBtn) {
+                            doneSummary.appendChild(toggleBtn);
+                        } else {
+                            doneSummary.appendChild(createToggleBtn(stepsContainer));
+                        }
+
+                        botDiv.insertBefore(doneSummary, stepsContainer);
+
                         const time = document.createElement('div');
                         time.classList.add('timestamp');
                         time.textContent = new Date().toLocaleTimeString('vi-VN');
@@ -644,6 +872,19 @@
                 sendBtn.disabled = false;
                 currentEventSource.close();
             };
+        }
+
+        function createToggleBtn(container) {
+            const btn = document.createElement('button');
+            btn.classList.add('toggle-steps-btn');
+            btn.textContent = '▼';
+            btn.title = 'Xem chi tiết các bước';
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                container.classList.toggle('expanded');
+                btn.textContent = container.classList.contains('expanded') ? '▲' : '▼';
+            });
+            return btn;
         }
 
         sendBtn.addEventListener('click', sendMessage);
