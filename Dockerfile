@@ -30,4 +30,4 @@ ENV PORT=8080
 EXPOSE 8080
 # CMD uv run uvicorn src.main:app --host 0.0.0.0 --port $PORT
 
-CMD ["sh", "-c", "uv run migrate_checkpoint.py && uv run gunicorn src.main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:$PORT"]
+CMD ["sh", "-c", "uv run migrate_checkpoint.py && uv run gunicorn src.main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:$PORT --access-logfile - --error-logfile - --log-level info"]

@@ -284,98 +284,6 @@
             margin-bottom: 10px;
         }
 
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-content h2 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1.5em;
-        }
-
-        .modal-content p {
-            color: #666;
-            margin-bottom: 25px;
-            font-size: 0.95em;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 15px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
-
-        .modal-content input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .modal-btn-primary {
-            width: 100%;
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .modal-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
-        }
-
-        .modal-btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
         .error-text {
             color: #c62828;
             font-size: 0.9em;
@@ -540,25 +448,14 @@
 </head>
 
 <body>
-    <!-- Client ID Modal -->
-    <div id="clientModal" class="modal-overlay">
-        <div class="modal-content">
-            <h2>👋 Chào mừng</h2>
-            <p>Nhập Client ID để bắt đầu</p>
-            <input type="text" id="clientInput" placeholder="Client ID..." autofocus />
-            <div id="errorText" class="error-text"></div>
-            <button class="modal-btn-primary" id="submitClientBtn">Tiếp tục</button>
-        </div>
-    </div>
-
     <div class="chat-container" id="chatContainer" style="display: none;">
         <div class="chat-header">
-            <span>Chat DB</span>
+            <span>SAIGONTOURIST</span>
             <button class="header-close-btn" id="headerCloseBtn">✕</button>
         </div>
         <div id="chat-box"></div>
         <div class="input-container">
-            <input type="text" id="message-input" placeholder="Hỏi về database..." autofocus />
+            <input type="text" id="message-input" placeholder="Nhập câu hỏi..." autofocus />
             <button id="send-btn">Gửi</button>
         </div>
     </div>
@@ -567,10 +464,6 @@
         const chatBox = document.getElementById('chat-box');
         const messageInput = document.getElementById('message-input');
         const sendBtn = document.getElementById('send-btn');
-        const clientModal = document.getElementById('clientModal');
-        const clientInput = document.getElementById('clientInput');
-        const submitClientBtn = document.getElementById('submitClientBtn');
-        const errorText = document.getElementById('errorText');
         const chatContainer = document.getElementById('chatContainer');
         const headerCloseBtn = document.getElementById('headerCloseBtn');
 
@@ -582,24 +475,15 @@
             if (window.parent !== window) {
                 window.parent.postMessage({ action: 'closeWidget' }, '*');
             } else {
-                // If not in iframe, just hide the container
                 chatContainer.style.display = 'none';
-                clientModal.style.display = 'flex';
             }
         });
 
-        // Clear client on page load
-        function generateClientId() {
-            return "client_" + crypto.randomUUID();
-        }
-
-        // Get client ID from URL parameter
         function getClientIdFromUrl() {
             const params = new URLSearchParams(window.location.search);
             return params.get('client_id');
         }
 
-        // Register client with backend
         async function registerClient(clientId) {
             try {
                 const res = await fetch('/client/v1/register', {
@@ -608,7 +492,6 @@
                     body: JSON.stringify({ client_id: clientId })
                 });
                 const data = await res.json();
-                console.log('Client registered:', clientId, data);
                 return data.success || data.message?.includes('đã tồn tại');
             } catch (error) {
                 console.error('Error registering client:', error);
@@ -619,83 +502,26 @@
         async function loadClientId() {
             let clientId = getClientIdFromUrl() || localStorage.getItem('chatdb_client_id');
 
-            // Auto-generate if not exists
             if (!clientId) {
-                clientId = generateClientId();
+                clientId = "client_" + crypto.randomUUID();
                 localStorage.setItem('chatdb_client_id', clientId);
             }
 
-            // Register client with backend
             await registerClient(clientId);
 
-            // Auto login - no modal
             currentClientId = clientId;
-            clientModal.classList.remove('active');
             chatContainer.style.display = 'flex';
             messageInput.focus();
             initializeChat();
         }
-
-        // Handle client ID submission
-        async function handleClientSubmit() {
-            const clientId = clientInput.value.trim();
-
-            if (!clientId) {
-                errorText.textContent = 'Vui lòng nhập Client ID';
-                return;
-            }
-
-            submitClientBtn.disabled = true;
-            errorText.textContent = '';
-
-            try {
-                // Check if client exists
-                const checkRes = await fetch(`/client/v1/check?client_id=${encodeURIComponent(clientId)}`);
-                const checkData = await checkRes.json();
-
-                if (checkData.exists) {
-                    errorText.textContent = 'Client ID đã tồn tại. Vui lòng dùng cái khác.';
-                    submitClientBtn.disabled = false;
-                    return;
-                }
-
-                // Register new client
-                const success = await registerClient(clientId);
-
-                if (!success) {
-                    errorText.textContent = 'Lỗi đăng ký client';
-                    submitClientBtn.disabled = false;
-                    return;
-                }
-
-                // Save and login
-                localStorage.setItem('chatdb_client_id', clientId);
-                currentClientId = clientId;
-
-                clientModal.classList.remove('active');
-                chatContainer.style.display = 'flex';
-                messageInput.focus();
-                initializeChat();
-            } catch (error) {
-                errorText.textContent = 'Lỗi kết nối';
-                submitClientBtn.disabled = false;
-            }
-        }
-
-        clientInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleClientSubmit();
-        });
-
-        submitClientBtn.addEventListener('click', handleClientSubmit);
 
         // Initialize chat
         function initializeChat() {
             const empty = document.createElement('div');
             empty.classList.add('empty-state');
             empty.innerHTML = `
-                <div class="empty-state-icon">💬</div>
-                <h3>Chat DB</h3>
-                <p>Hỏi về database của bạn</p>
+                <h3>ChatBot</h3>
+                <p>Hỗ trợ chăm sóc khách hàng</p>
             `;
             chatBox.appendChild(empty);
         }
@@ -807,8 +633,9 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             // Send message with client_id
+            const queryBase = window.location.origin;
             currentEventSource = new EventSource(
-                `/query/v1?message=${encodeURIComponent(text)}&client_id=${encodeURIComponent(currentClientId)}`
+                `${queryBase}/query/v1?message=${encodeURIComponent(text)}&client_id=${encodeURIComponent(currentClientId)}`
             );
 
             currentEventSource.onmessage = (event) => {
@@ -908,7 +735,22 @@
 
         window.addEventListener('beforeunload', () => {
             if (currentEventSource) currentEventSource.close();
+            // Notify server to clear session when page closes
+            if (currentClientId) {
+                navigator.sendBeacon('/client/v1/clear?client_id=' + encodeURIComponent(currentClientId));
+            }
         });
+
+        // Keepalive heartbeat every 2 minutes
+        setInterval(() => {
+            if (currentClientId) {
+                fetch('/client/v1/keepalive', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ client_id: currentClientId })
+                }).catch(() => { });
+            }
+        }, 120000);
     </script>
 </body>
 

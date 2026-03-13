@@ -37,20 +37,47 @@
             return clientId;
         }
 
-        const clientId = getOrGenerateClientId();
+        let clientId = getOrGenerateClientId();
 
-        const iframeUrl =
-            queryUrl + "?client_id=" + encodeURIComponent(clientId);
+        function buildIframeUrl(id) {
+            return queryUrl + "?client_id=" + encodeURIComponent(id);
+        }
 
         // ===== clear session =====
-        function clearSession() {
+        function clearSession(id) {
             const clearUrl =
-                baseUrl + "/clear?client_id=" + encodeURIComponent(clientId);
+                baseUrl + "/client/v1/clear?client_id=" + encodeURIComponent(id || clientId);
 
             try {
                 navigator.sendBeacon(clearUrl);
             } catch (e) {
                 fetch(clearUrl).catch(() => { });
+            }
+        }
+
+        // ===== register client =====
+        async function registerClient(id) {
+            try {
+                const res = await fetch(baseUrl + "/client/v1/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ client_id: id }),
+                });
+                const data = await res.json();
+                return data.success || (data.message && data.message.includes("tồn tại"));
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // ===== check session còn sống không =====
+        async function checkClient(id) {
+            try {
+                const res = await fetch(baseUrl + "/client/v1/check?client_id=" + encodeURIComponent(id));
+                const data = await res.json();
+                return data.exists === true;
+            } catch (e) {
+                return false;
             }
         }
 
@@ -98,7 +125,7 @@
         // ===== iframe =====
         const iframe = document.createElement("iframe");
 
-        iframe.src = iframeUrl;
+        iframe.src = buildIframeUrl(clientId);
         iframe.style.width = "100%";
         iframe.style.height = "100%";
         iframe.style.border = "none";
@@ -106,25 +133,35 @@
         box.appendChild(iframe);
         document.body.appendChild(box);
 
-        // ===== toggle widget =====
+        // ===== 💬 chỉ toggle đóng/mở =====
         button.onclick = () => {
-            box.style.display =
-                box.style.display === "none" ? "block" : "none";
+            box.style.display = box.style.display === "none" ? "block" : "none";
         };
 
-        // ===== listen message từ iframe =====
-        window.addEventListener("message", (event) => {
+        // ===== listen message từ iframe (✕ button) =====
+        // Khi nhấn ✕: clear session cũ → tạo session mới → reload iframe
+        window.addEventListener("message", async (event) => {
 
             if (!event.data) return;
 
             if (event.data.action === "closeWidget") {
                 box.style.display = "none";
-                clearSession();
+
+                // Clear session cũ
+                clearSession(clientId);
+
+                // Tạo client_id mới để lần mở tiếp là session sạch
+                const newId = "client_" + crypto.randomUUID();
+                localStorage.setItem("chatdb_client_id", newId);
+                clientId = newId;
+
+                await registerClient(newId);
+                iframe.src = buildIframeUrl(newId);
             }
 
         });
 
-        // ===== clear khi reload / close =====
+        // ===== clear khi reload / close tab =====
         window.addEventListener("beforeunload", () => {
             clearSession();
         });
@@ -132,7 +169,7 @@
         // debug
         console.log("ChatDB widget loaded");
         console.log("script:", scriptSrc);
-        console.log("iframe:", iframeUrl);
+        console.log("iframe:", buildIframeUrl(clientId));
         console.log("api:", baseUrl);
 
     }

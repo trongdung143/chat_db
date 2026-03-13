@@ -88,6 +88,7 @@ async def keepalive_client(client: ClientID):
 
 
 @router.get("/clear")
+@router.post("/clear")
 async def clear_client(client_id: str, request: Request):
     """Clear/remove a client from the server"""
     try:
