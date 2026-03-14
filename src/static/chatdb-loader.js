@@ -120,7 +120,7 @@
 
             #chatdb-greet-bubble {
                 position: fixed;
-                bottom: 30px;
+                bottom: 42px;
                 right: 92px;
                 background: white;
                 border-radius: 14px 14px 4px 14px;
@@ -130,11 +130,16 @@
                 font-weight: 500;
                 color: #0f172a;
                 box-shadow: 0 8px 28px rgba(37,99,235,0.14), 0 2px 8px rgba(0,0,0,0.06);
-                white-space: nowrap;
                 z-index: 999999;
                 opacity: 0;
                 border: 1px solid #e2e8f8;
                 overflow: hidden;
+                transition: opacity 0.5s ease;
+                white-space: nowrap;
+                display: flex;
+                align-items: center;
+                box-sizing: border-box;
+                line-height: normal;
             }
             #chatdb-greet-bubble::after {
                 content: '';
@@ -215,6 +220,8 @@
             greetRunning = false;
             clearTimeout(greetTimer);
             greetTimer = null;
+            textSpan.textContent = "";
+            greetBubble.style.opacity = "0";
         }
 
         function startGreet(delay) {
@@ -223,12 +230,42 @@
             greetTimer = setTimeout(runGreetLoop, delay || 1000);
         }
 
+        // element ẩn để đo kích thước đầy đủ — style y hệt bubble
+        const measureSpan = document.createElement("div");
+        measureSpan.style.cssText = `
+            position: fixed;
+            visibility: hidden;
+            pointer-events: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 12.5px;
+            font-weight: 500;
+            white-space: nowrap;
+            padding: 9px 15px;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            line-height: normal;
+            box-sizing: border-box;
+        `;
+        measureSpan.textContent = greetText;
+        document.body.appendChild(measureSpan);
+
         function runGreetLoop() {
             if (!greetRunning) return;
             let i = 0;
             textSpan.textContent = "";
+
+            // Đo kích thước đầy đủ
+            const fullW = measureSpan.offsetWidth;
+            const fullH = measureSpan.offsetHeight;
+
+            // Set kích thước vừa khít rồi hiện bubble (chưa có chữ)
+            greetBubble.style.width = fullW + "px";
+            greetBubble.style.height = fullH + "px";
             greetBubble.style.opacity = "1";
-            greetBubble.style.transition = "opacity 0.5s ease";
+
+            // Chờ bubble fade-in xong (500ms) rồi mới bắt đầu type
+            greetTimer = setTimeout(type, 500);
 
             function type() {
                 if (!greetRunning) return;
@@ -248,7 +285,6 @@
                     }, 10000);
                 }
             }
-            type();
         }
 
         // Bắt đầu sau 1s

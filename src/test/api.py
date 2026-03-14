@@ -6,7 +6,7 @@ app = FastAPI()
 
 
 BASE_DIR = os.path.dirname(__file__)
-STATIC_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "static"))
+STATIC_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "test"))
 
 
 @app.get("/", response_class=HTMLResponse)
