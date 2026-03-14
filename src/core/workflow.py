@@ -55,7 +55,7 @@ class Workflow:
     @traceable
     async def _question_to_sql(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Tạo truy vấn ...")
+        stream_writer("INFO:Đang phân tích dữ liệu ...")
 
         try:
             chain = sql_prompt | sql_model
@@ -75,7 +75,7 @@ class Workflow:
 
             state.update(sql=response.content, next_node=next_node)
         except Exception as e:
-            stream_writer("ERROR:Lỗi khi tạo câu truy vấn!")
+            stream_writer("ERROR:Lỗi khi phân tích dữ liệu!")
         return state
 
     def question_detail(self, state: State) -> State:
@@ -92,7 +92,7 @@ class Workflow:
 
     async def _sql_to_data(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Lấy dữ liệu ...")
+        stream_writer("INFO:Đang phân tích dữ liệu ...")
 
         try:
             sql = state.get("sql")
@@ -105,10 +105,10 @@ class Workflow:
             list_data.append({"question": state.get("question"), "data": data})
             state.update(list_data=list_data, next_node="data_to_answer")
         except Exception as e:
-            stream_writer("ERROR:Lỗi khi lấy dữ liệu!")
+            stream_writer("ERROR:Lỗi khi phân tích dữ liệu!")
             if state.get("sql_fix_count") >= 3:
                 state.update(next_node="__end__")
-                stream_writer("ERROR:Không thể lấy được dữ liệu!")
+                stream_writer("ERROR:Không thể phân tích dữ liệu!")
             else:
                 state.update(next_node="sql_fix", sql_error_msg=str(e))
 
@@ -116,7 +116,7 @@ class Workflow:
 
     async def _sql_fix(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Sửa câu truy vấn ...")
+        stream_writer("INFO:Đang phân tích dữ liệu ...")
 
         try:
             state.update(sql_fix_count=state.get("sql_fix_count") + 1)
@@ -133,13 +133,13 @@ class Workflow:
             sql = sanitize_sql(response.content)
             state.update(sql=sql, next_node="sql_to_data")
         except Exception as e:
-            stream_writer("ERROR:Lỗi khi sửa câu truy vấn!")
+            stream_writer("ERROR:Lỗi khi phân tích dữ liệu!")
 
         return state
 
     async def _data_to_answer(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Tạo câu trả lời ...")
+        stream_writer("INFO:Đang xử lý thông tin ...")
 
         try:
 
@@ -164,13 +164,13 @@ class Workflow:
                 next_node="__end__",
             )
         except Exception as e:
-            stream_writer("ERROR:Lỗi khi tạo câu trả lời ...")
+            stream_writer("ERROR:Lỗi khi xử lý thông tin ...")
 
         return state
 
     async def _simple_question(self, state: State) -> State:
         stream_writer = get_stream_writer()
-        stream_writer("INFO:Tạo câu trả lời ...")
+        stream_writer("INFO:Đang xử lý thông tin ...")
         try:
 
             chain = assistant_no_data_prompt | assistant_model.bind_tools(tools)
@@ -186,7 +186,7 @@ class Workflow:
                 next_node="__end__",
             )
         except Exception as e:
-            stream_writer("ERROR:Lỗi khi tạo câu trả lời ...")
+            stream_writer("ERROR:Lỗi khi xử lý thông tin ...")
 
         return state
 

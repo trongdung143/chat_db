@@ -63,7 +63,9 @@ RELATIONS:
 CARDS_CUSTOMERS_SCHEMA = """
 TABLE: CardCustomers
 Mô tả:
-Bảng lưu thẻ thành viên của từng khách hàng.
+Bảng lưu trữ thông tin các thẻ của từng khách hàng, 
+bao gồm toàn bộ các thẻ mà khách hàng đã sở hữu trong quá trình sử dụng dịch vụ, 
+đồng thời ghi nhận lịch sử thay đổi hạng thẻ (nâng hạng hoặc hạ hạng) theo thời gian.
 
 PRIMARY KEY:
 - Id

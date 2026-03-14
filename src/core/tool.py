@@ -44,7 +44,7 @@ async def get_business_rules(topic: str, runtime: ToolRuntime) -> str:
         Nội dung quy tắc nghiệp vụ liên quan đến chủ đề để phục vụ phân tích và trả lời.
     """
     writer = runtime.stream_writer
-    writer("INFO:Đang truy vấn nghiệp vụ ...")
+    writer("INFO:Đang phân tích nghiệp vụ ...")
     BUSINESS_RULES = """
     TÀI KHOẢN TÍCH LŨY
     Là tài khoản ghi nhận tổng giá trị tích lũy dịch vụ và số lần sử dụng tour trọn gói

@@ -28,7 +28,7 @@ services:
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     healthcheck:
       test: [ "CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD}", "ping" ]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
     volumes:

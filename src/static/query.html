@@ -369,9 +369,9 @@
             padding: 10px 14px;
             font-size: 13.5px;
             line-height: 1.65;
-            word-wrap: break-word;
-            word-break: break-word;
-            min-width: 48px;
+            overflow-wrap: break-word;
+            word-break: normal;
+            min-width: 0;
         }
 
         .message.user {
@@ -379,8 +379,10 @@
             color: white;
             border-radius: 18px 18px 4px 18px;
             box-shadow: var(--shadow-blue);
-            max-width: 78%;
+            max-width: 100%;
+            width: fit-content;
             white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .message.bot {
@@ -483,36 +485,17 @@
         }
 
         .done-summary {
-            margin-bottom: 8px;
-            padding: 4px 10px;
-            background: var(--blue-glass);
-            border-radius: 20px;
-            font-size: 10.5px;
-            color: var(--blue);
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            border: 1px solid rgba(37, 99, 235, 0.12);
+            margin-bottom: 0;
+            display: block;
+            line-height: 1;
         }
 
         .done-summary::before {
-            content: '✓';
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 14px;
-            height: 14px;
-            background: var(--blue);
-            color: white;
-            border-radius: 50%;
-            font-size: 8px;
-            font-weight: 700;
-            flex-shrink: 0;
+            display: none;
         }
 
         .done-text {
-            flex: 1;
+            display: none;
         }
 
         .toggle-steps-btn {
@@ -520,10 +503,14 @@
             border: none;
             cursor: pointer;
             font-size: 9px;
-            padding: 2px 6px;
-            color: var(--blue);
-            opacity: 0.6;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+            color: var(--text-muted);
+            opacity: 0.7;
             transition: opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
         }
 
         .toggle-steps-btn:hover {
@@ -820,7 +807,7 @@
         .input-wrapper {
             position: relative;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             gap: 8px;
             background: var(--bg-input);
             border: 1.5px solid var(--border);
@@ -1113,7 +1100,7 @@
             row.classList.add('msg-row', sender);
 
             const col = document.createElement('div');
-            col.style.cssText = 'display:flex;flex-direction:column;max-width:82%;';
+            col.style.cssText = 'display:flex;flex-direction:column;max-width:82%;min-width:0;';
             if (sender === 'user') col.style.alignItems = 'flex-end';
 
             const bubble = document.createElement('div');
