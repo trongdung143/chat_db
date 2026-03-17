@@ -18,3 +18,4 @@ langgraph-checkpoint-postgres
 psycopg[binary,pool]
 gunicorn 
 redis
+cryptography

@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from src.setup import DB_DRIVER, DB_SERVER, DB_DATABASE, DB_UID, DB_PWD
+from middleware.setup import DB_DRIVER, DB_SERVER, DB_DATABASE, DB_UID, DB_PWD
 
 
 class Database:

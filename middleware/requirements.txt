@@ -1,0 +1,9 @@
+fastapi
+python-dotenv
+uvicorn[standard]
+gunicorn 
+cryptography
+python-dotenv
+pyodbc
+aioodbc
+pandas

@@ -19,8 +19,7 @@ from src.core.prompt import (
     sql_fix_prompt,
 )
 from src.database.schema_db import FULL_SCHEMA
-from src.services.sql_service import SQLService
-from src.database.conn_db import Database
+from src.services.sql_service import get_from_sql
 from src.core.utils import dataframe_to_json, sanitize_sql
 from src.core.tool import tools
 from src.setup import DB_CHECKPOINT
@@ -28,8 +27,6 @@ from src.setup import DB_CHECKPOINT
 
 class Workflow:
     def __init__(self):
-        self._db = Database()
-        self._sql_service = SQLService(self._db)
         self._checkpointer = None
         self._nodes = [
             "question_to_sql",
@@ -98,8 +95,7 @@ class Workflow:
             sql = state.get("sql")
             sql = sanitize_sql(sql)
 
-            df = await self._sql_service.execute(sql)
-            data = dataframe_to_json(df)
+            data = get_from_sql(sql)
 
             list_data = state.get("list_data", [])
             list_data.append({"question": state.get("question"), "data": data})

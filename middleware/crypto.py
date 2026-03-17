@@ -4,9 +4,7 @@ import hashlib
 import hmac
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
-from src.setup import AES_KEY, HMAC_KEY, MIDDLEWARE_HOST
-import httpx
-import json
+from middleware.setup import AES_KEY, HMAC_KEY
 
 
 def encrypt(data: str):
@@ -49,23 +47,3 @@ def sign(message: str):
 def verify(message: str, signature: str):
     expected = sign(message)
     return hmac.compare_digest(expected, signature)
-
-
-async def get_from_sql(sql: str):
-    encrypted = encrypt(sql)
-    signature = sign(encrypted)
-
-    async with httpx.AsyncClient() as client:
-        res = await client.post(
-            f"{MIDDLEWARE_HOST}query/v1",
-            json={"data": encrypted, "signature": signature},
-        )
-
-    res_json = res.json()
-
-    if not verify(res_json["data"], res_json["signature"]):
-        raise Exception("Response bị giả mạo")
-
-    result = decrypt(res_json["data"])
-
-    return json.loads(result)
